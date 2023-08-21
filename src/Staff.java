@@ -11,6 +11,10 @@ public class Staff {
     private String sex;
     private int salary;
 
+    // Default constructor
+    public Staff() {
+    };
+
     // Constructor
     public Staff(String id, String name, String designation, String sex, int salary) {
         this.id = id;
@@ -61,13 +65,25 @@ public class Staff {
         return salary;
     }
 
+    // Prompts user to enter information of staff
     public void newStaff() {
 
         System.out.print("Enter staff's ID: ");
+        id = input.nextLine();
         System.out.print("Enter staff's name: ");
+        name = input.nextLine();
         System.out.print("Enter staff's designation: ");
+        designation = input.nextLine();
         System.out.print("Enter staff's sex: ");
+        sex = input.nextLine();
         System.out.print("Enter staff's salary: ");
-
+        salary = input.nextInt();
+        
     }
+
+    // Shows the information of staff
+    public void showStaffInfo(){
+        System.out.println(id + "\t\t" + name + "\t\t" + designation + "\t\t" + sex + "\t\t" + salary);
+    }
+
 }
