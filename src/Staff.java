@@ -1,38 +1,28 @@
 import java.util.Scanner;
 
-public class Staff {
+public class Staff extends Person {
 
     Scanner input = new Scanner(System.in);
 
     // Data fields
-    private String id;
-    private String name;
     private String designation;
     private String sex;
     private int salary;
 
     // Default constructor
     public Staff() {
-    };
+        super();
+    }
 
     // Constructor
     public Staff(String id, String name, String designation, String sex, int salary) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
         this.designation = designation;
         this.sex = sex;
         this.salary = salary;
     }
 
     // Accessors and mutators
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setDesignation(String designation) {
         this.designation = designation;
     }
@@ -43,14 +33,6 @@ public class Staff {
 
     public void setSalary(int salary) {
         this.salary = salary;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDesignation() {
@@ -69,21 +51,21 @@ public class Staff {
     public void newStaff() {
 
         System.out.print("Enter staff's ID: ");
-        id = input.nextLine();
+        super.setId(input.nextLine());
         System.out.print("Enter staff's name: ");
-        name = input.nextLine();
+        super.setName(input.nextLine());
         System.out.print("Enter staff's designation: ");
         designation = input.nextLine();
         System.out.print("Enter staff's sex: ");
         sex = input.nextLine();
         System.out.print("Enter staff's salary: ");
         salary = input.nextInt();
-        
+
     }
 
     // Shows the information of staff
-    public void showStaffInfo(){
-        System.out.println(id + "\t\t" + name + "\t\t" + designation + "\t\t" + sex + "\t\t" + salary);
+    public void showStaffInfo() {
+        System.out.println(getId() + "\t\t" + getName() + "\t\t" + designation + "\t\t" + sex + "\t\t" + salary);
     }
 
 }
