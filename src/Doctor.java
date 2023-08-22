@@ -73,7 +73,7 @@ public class Doctor extends Person {
     }
 
     // Shows the information of doctor
-    public void showStaffInfo() {
+    public void showDoctorInfo() {
         System.out.println(getId() + "\t\t" + getName() + "\t\t" + specialist + "\t\t" + workTime + "\t\t"
                 + qualification + "\t\t" + room);
     }
