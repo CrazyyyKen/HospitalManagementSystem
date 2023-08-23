@@ -15,8 +15,7 @@ public class HospitalManagement {
         doctors.add(new Doctor("001", "Dr. Soon Chun Hong", "Surgeon", "8-11AM", "MBSS, MD", 1));
         doctors.add(new Doctor("999", "Dr. Desmond", "Dentist", "8-11AM", "MBSS, MD", 99));
 
-        
-
+        // Print doctors ArrayList
         for (int i = 0; i < doctors.size(); i++) {
             doctors.get(i).showDoctorInfo();
         }
