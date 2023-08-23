@@ -69,7 +69,9 @@ public class Patient extends Person {
 
     // Shows the information of doctor
     public void showPatientInfo() {
-        System.out.println(getId() + "\t\t" + getName() + "\t\t" + disease + "\t\t" + sex + "\t\t"
-                + admitStatus + "\t\t" + age);
+        String format = "%-5s %-20s %-20s %-10s %-15s %-5d";
+        String output = String.format(format, getId(), getName(), disease, sex, admitStatus, age);
+        System.out.println(output);
     }
+    
 }

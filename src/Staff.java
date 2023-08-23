@@ -65,7 +65,9 @@ public class Staff extends Person {
 
     // Shows the information of staff
     public void showStaffInfo() {
-        System.out.println(getId() + "\t\t" + getName() + "\t\t" + designation + "\t\t" + sex + "\t\t" + salary);
+        String format = "%-5s %-20s %-15s %-10s %-5d";
+        String output = String.format(format, getId(), getName(), designation, sex, salary);
+        System.out.println(output);
     }
 
 }
