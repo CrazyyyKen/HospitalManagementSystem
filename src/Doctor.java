@@ -1,81 +1,131 @@
-import java.util.Scanner;
+import javax.swing.JOptionPane;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class Doctor extends Person {
-    Scanner input = new Scanner(System.in);
 
-    // Data fields
-    private String specialist;
-    private String workTime;
-    private String qualification;
-    private int room;
+	// Data fields
+	private String specialist;
+	private String workTime;
+	private String qualification;
+	private int room;
 
-    // Default constructor
-    public Doctor() {
-        super();
-    }
+	// Default constructor
+	public Doctor() {
+		super();
+	}
 
-    // Constructor
-    public Doctor(String id, String name, String specialist, String workTime, String qualification, int room) {
-        super(id, name);
-        this.specialist = specialist;
-        this.workTime = workTime;
-        this.qualification = qualification;
-        this.room = room;
-    }
+	// Constructor
+	public Doctor(String id, String name, String specialist, String workTime, String qualification, int room) {
+		super(id, name);
+		this.specialist = specialist;
+		this.workTime = workTime;
+		this.qualification = qualification;
+		this.room = room;
+	}
 
-    // Accessors and mutators
-    public void setSpecialist(String specialist) {
-        this.specialist = specialist;
-    }
+	// Prompts user to enter information of doctor
+	public Scene newDoctor(Stage primaryStage) {
 
-    public void setWorkTime(String workTime) {
-        this.workTime = workTime;
-    }
+		// Create label objects
+		Label idLabel = new Label("Enter doctor's id: ");
+		Label nameLabel = new Label("Enter doctor's name: ");
+		Label specialistLabel = new Label("Enter doctor's specialization: ");
+		Label workTimeLabel = new Label("Enter doctor's work time: ");
+		Label qualificationLabel = new Label("Enter doctor's qualification: ");
+		Label roomLabel = new Label("Enter doctor's room number: ");
 
-    public void setQualification(String qualification) {
-        this.qualification = qualification;
-    }
+		// Create text field objects
+		TextField idInput = new TextField();
+		TextField nameInput = new TextField();
+		TextField specialistInput = new TextField();
+		TextField workTimeInput = new TextField();
+		TextField qualificationInput = new TextField();
+		TextField roomInput = new TextField();
 
-    public void setRoom(int room) {
-        this.room = room;
-    }
+		// Create button object
+		Button addButton = new Button("Add");
 
-    public String getSpecialist() {
-        return specialist;
-    }
+		// Create HBox objects
+		HBox hBox1 = new HBox();
+		HBox hBox2 = new HBox();
+		HBox hBox3 = new HBox();
+		HBox hBox4 = new HBox();
+		HBox hBox5 = new HBox();
+		HBox hBox6 = new HBox();
 
-    public String getWorkTime() {
-        return workTime;
-    }
+		// Create VBox object
+		VBox vBox = new VBox(10);
 
-    public String getQualification() {
-        return qualification;
-    }
+		// Create border pane object
+		BorderPane borderPane = new BorderPane();
 
-    public int getRoom() {
-        return room;
-    }
+		// Arrange panes and objects
+		hBox1.getChildren().addAll(idLabel, idInput);
+		hBox1.setAlignment(Pos.CENTER);
 
-    // Prompts user to enter information of doctor
-    public void newDoctor() {
-        System.out.print("Enter doctor's ID: ");
-        super.setId(input.nextLine());
-        System.out.print("Enter doctor's name: ");
-        super.setName(input.nextLine());
-        System.out.print("Enter doctor's specialization: ");
-        specialist = input.nextLine();
-        System.out.print("Enter doctor's work time: ");
-        workTime = input.nextLine();
-        System.out.print("Enter doctor's work time: ");
-        workTime = input.nextLine();
-        System.out.print("Enter doctor's room number: ");
-        room = input.nextInt();
-    }
+		hBox2.getChildren().addAll(nameLabel, nameInput);
+		hBox2.setAlignment(Pos.CENTER);
 
-    // Shows the information of doctor
-    public void showDoctorInfo() {
-        String format = "%-5s %-20s %-15s %-10s %-15s %-5d";
-        String output = String.format(format, getId(), getName(), specialist, workTime, qualification, room);
-        System.out.println(output);
-    }
+		hBox3.getChildren().addAll(specialistLabel, specialistInput);
+		hBox3.setAlignment(Pos.CENTER);
+
+		hBox4.getChildren().addAll(workTimeLabel, workTimeInput);
+		hBox4.setAlignment(Pos.CENTER);
+
+		hBox5.getChildren().addAll(qualificationLabel, qualificationInput);
+		hBox5.setAlignment(Pos.CENTER);
+
+		hBox6.getChildren().addAll(roomLabel, roomInput);
+		hBox6.setAlignment(Pos.CENTER);
+
+		vBox.getChildren().addAll(hBox1, hBox2, hBox3, hBox4, hBox5, hBox6, addButton);
+		vBox.setAlignment(Pos.CENTER);
+
+		borderPane.setCenter(vBox);
+		BorderPane.setAlignment(vBox, Pos.CENTER);
+
+		// Create event handling for button
+		addButton.setOnAction(e -> {
+
+			// Input validation
+			super.setId(idInput.getText());
+			super.setName(nameInput.getText());
+			specialist = specialistInput.getText();
+			workTime = workTimeInput.getText();
+			qualification = qualificationInput.getText();
+			room = Integer.parseInt(roomInput.getText());
+
+			// Check if user would like to return to previous section or return to main menu
+			JOptionPane.showMessageDialog(null, "Successfully added!", "InfoBox: " + "Message",
+					JOptionPane.INFORMATION_MESSAGE);
+
+			int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+					JOptionPane.YES_NO_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+				primaryStage.setScene(CustomScene.mainMenuPage(primaryStage));
+			} else {
+				primaryStage.setScene(CustomScene.doctorPage(primaryStage));
+			}
+
+		});
+
+		// Create scene object
+		Scene scene = new Scene(borderPane, 1200, 800);
+		return scene;
+
+	}
+
+	// Shows the information of doctor
+	public String[] showDoctorInfo() {
+		String[] output = { getId(), getName(), specialist, workTime, qualification, room + "" };
+		return output;
+	}
 }

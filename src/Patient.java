@@ -20,38 +20,6 @@ public class Patient extends Person {
         this.age = age;
     }
 
-    public void setDisease(String disease) {
-        this.disease = disease;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public void setAdmitStatus(String admitStatus) {
-        this.admitStatus = admitStatus;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getDisease() {
-        return disease;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public String getAdmitStatus() {
-        return admitStatus;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
     public void newPatient() {
         System.out.print("Enter patient's ID: ");
         super.setId(input.nextLine());

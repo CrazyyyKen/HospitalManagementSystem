@@ -22,31 +22,6 @@ public class Staff extends Person {
         this.salary = salary;
     }
 
-    // Accessors and mutators
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
     // Prompts user to enter information of staff
     public void newStaff() {
 
