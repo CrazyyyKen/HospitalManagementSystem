@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class InputValidation {
     
     // Array index out of bound exception

@@ -8,6 +8,9 @@ public class HospitalManagement extends Application {
 	public static ArrayList<Doctor> doctors = new ArrayList<Doctor>();
 	public static ArrayList<Patient> patients = new ArrayList<Patient>();
 	public static ArrayList<Staff> staffs = new ArrayList<Staff>();
+	public static ArrayList<Medical> medicals = new ArrayList<Medical>();
+	public static ArrayList<Lab> laboratories = new ArrayList<Lab>();
+	public static ArrayList<Facility> facilities = new ArrayList<Facility>();
 
 	// Stage for welcome page scene
 	public void start(Stage primaryStage) {

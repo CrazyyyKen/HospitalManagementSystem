@@ -104,7 +104,7 @@ public class Doctor extends Person {
 			room = Integer.parseInt(roomInput.getText());
 
 			// Check if user would like to return to previous section or return to main menu
-			JOptionPane.showMessageDialog(null, "Successfully added!", "InfoBox: " + "Message",
+			JOptionPane.showMessageDialog(null, "Successfully added!", "Message",
 					JOptionPane.INFORMATION_MESSAGE);
 
 			int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",

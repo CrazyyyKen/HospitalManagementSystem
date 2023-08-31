@@ -15,6 +15,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class CustomScene {
+
+	// Welcome page
 	public static Scene welcomePage(Stage primaryStage) {
 
 		// Create local date time object
@@ -148,6 +150,7 @@ public class CustomScene {
 		return scene;
 	}
 
+	// Show doctors' information page
 	public static Scene showDoctorPage(Stage primaryStage) {
 
 		// Create VBox object
