@@ -80,6 +80,8 @@ public class HospitalManagement extends Application {
 		BorderPane.setAlignment(vBox, Pos.CENTER);
 
 		// Create event handling for startButton
+		
+		// Call mainMenuPage method
 		startButton.setOnAction(e -> {
 			primaryStage.setScene(mainMenuPage(primaryStage));
 		});
@@ -119,9 +121,13 @@ public class HospitalManagement extends Application {
 		BorderPane.setAlignment(vBox, Pos.CENTER);
 
 		// Create event handling for buttons
+		
+		// Call doctorPage method
 		doctorButton.setOnAction(e -> {
 			primaryStage.setScene(Doctor.doctorPage(primaryStage));
 		});
+		
+		// Exit program
 		exitButton.setOnAction(e -> {
 			System.exit(0);
 		});

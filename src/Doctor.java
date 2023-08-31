@@ -238,9 +238,7 @@ public class Doctor extends Person {
 
 		// Call showDoctorPage method
 		displayButton.setOnAction(e -> {
-
 			primaryStage.setScene(showDoctorPage(primaryStage));
-
 		});
 
 		// Call mainMenuPage method
