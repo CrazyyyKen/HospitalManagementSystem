@@ -19,9 +19,11 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class Doctor extends Person {
+public class Doctor {
 
 	// Data fields
+	private String id;
+	private String name;
 	private String specialist;
 	private String workTime;
 	private String qualification;
@@ -30,40 +32,16 @@ public class Doctor extends Person {
 
 	// Default constructor
 	public Doctor() {
-		super();
 	}
 
 	// Constructor
 	public Doctor(String id, String name, String specialist, String workTime, String qualification, int room) {
-		super(id, name);
+		this.id = id;
+		this.name = name;
 		this.specialist = specialist;
 		this.workTime = workTime;
 		this.qualification = qualification;
 		this.room = room;
-	}
-
-	public String getId() {
-		return super.getId();
-	}
-
-	public String getName() {
-		return super.getName();
-	}
-
-	public String getSpecialist() {
-		return specialist;
-	}
-
-	public String getWorkTime() {
-		return workTime;
-	}
-
-	public String getQualification() {
-		return qualification;
-	}
-
-	public int getRoom() {
-		return room;
 	}
 
 	// Prompts user to enter information of doctor
@@ -164,8 +142,8 @@ public class Doctor extends Person {
 			if (doctorValidation(textFieldArray, inputArray, HospitalManagement.doctors)) {
 
 				// Assign value to doctor object's data fields
-				super.setId(String.format("%03d", Integer.parseInt(idInput)));
-				super.setName("Dr. " + nameInput);
+				id = String.format("%03d", Integer.parseInt(idInput));
+				name = "Dr. " + nameInput;
 				specialist = specialistInput;
 				workTime = workTimeInput;
 				qualification = qualificationInput;
@@ -200,7 +178,7 @@ public class Doctor extends Person {
 
 	// Shows the information of doctor
 	public String[] showDoctorInfo() {
-		String[] output = { getId(), getName(), specialist, workTime, qualification, room + "" };
+		String[] output = { id, name, specialist, workTime, qualification, room + "" };
 		return output;
 	}
 
@@ -250,7 +228,7 @@ public class Doctor extends Person {
 		Scene scene = new Scene(borderPane, 1200, 800);
 		return scene;
 	}
-	
+
 	// Show doctor's information page
 	public static Scene showDoctorPage(Stage primaryStage) {
 
@@ -361,7 +339,7 @@ public class Doctor extends Person {
 
 		// Check if ID and room number is duplicated or not
 		for (int i = 0; i < arrayList.size(); i++) {
-			if (arrayList.get(i).getId().equals(String.format("%03d", Integer.parseInt(idInput)))) {
+			if (arrayList.get(i).id.equals(String.format("%03d", Integer.parseInt(idInput)))) {
 				textFieldArray[0].clear();
 				this.errorMsg = "ID already exists in record.";
 				return false;
