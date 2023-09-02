@@ -2,22 +2,33 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import resources.Style;
 
 public class Doctor {
 
@@ -47,78 +58,72 @@ public class Doctor {
 	// Prompts user to enter information of doctor
 	public Scene newDoctor(Stage primaryStage) {
 
+		// Create button object
+		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
+		Button backButton = new Button("", backIcon);
+		backButton.setStyle(Style.getIconStyle());
+		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
+		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
+		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+		backButton.setLayoutX(200);
+		backButton.setLayoutY(100);
+
 		// Create label objects
 		Label idLabel = new Label("Enter doctor's id: ");
+		idLabel.setStyle(Style.getTextStyle());
 		Label nameLabel = new Label("Enter doctor's name: ");
+		nameLabel.setStyle(Style.getTextStyle());
 		Label specialistLabel = new Label("Enter doctor's specialization: ");
+		specialistLabel.setStyle(Style.getTextStyle());
 		Label workTimeLabel = new Label("Enter doctor's work time: ");
+		workTimeLabel.setStyle(Style.getTextStyle());
 		Label qualificationLabel = new Label("Enter doctor's qualification: ");
+		qualificationLabel.setStyle(Style.getTextStyle());
 		Label roomLabel = new Label("Enter doctor's room number: ");
+		roomLabel.setStyle(Style.getTextStyle());
 		Label dashLabel = new Label("-");
+		dashLabel.setFont(Font.font("Courier", FontWeight.EXTRA_BOLD, 20));
 
 		// Create text field objects
 		TextField idTextField = new TextField();
+		idTextField.setStyle(Style.getTextStyle());
 		TextField nameTextField = new TextField();
+		nameTextField.setStyle(Style.getTextStyle());
 		TextField qualificationTextField = new TextField();
+		qualificationTextField.setStyle(Style.getTextStyle());
 		TextField roomTextField = new TextField();
+		roomTextField.setStyle(Style.getTextStyle());
 
 		// Create spinner objects
 		Spinner<Integer> startTime = new Spinner<>(1, 12, 8);
 		startTime.setEditable(true);
+		startTime.setStyle(Style.getTextStyle());
+		startTime.getEditor().setPrefWidth(100);
 		Spinner<Integer> endTime = new Spinner<>(1, 12, 11);
 		endTime.setEditable(true);
+		endTime.setStyle(Style.getTextStyle());
+		endTime.getEditor().setPrefWidth(100);
 
 		// Create combo box objects
 		String[] specialistArray = { "Physician", "Surgeon", "Pathologist", "Pediatrician", "Dermatologist" };
 		ComboBox<String> specialistComboBox = new ComboBox<>();
+		specialistComboBox.setStyle(Style.getTextStyle());
 		specialistComboBox.getItems().addAll(specialistArray);
 		specialistComboBox.getSelectionModel().selectFirst();
 
 		ComboBox<String> workTimeComboBox = new ComboBox<>();
+		workTimeComboBox.setStyle(Style.getTextStyle());
 		workTimeComboBox.getItems().addAll("AM", "PM");
 		workTimeComboBox.getSelectionModel().selectFirst();
 
 		// Create button object
 		Button addButton = new Button("Add");
-
-		// Create HBox objects
-		HBox hBox1 = new HBox();
-		HBox hBox2 = new HBox();
-		HBox hBox3 = new HBox();
-		HBox hBox4 = new HBox();
-		HBox hBox5 = new HBox();
-		HBox hBox6 = new HBox();
-
-		// Create VBox object
-		VBox vBox = new VBox(10);
-
-		// Create border pane object
-		BorderPane borderPane = new BorderPane();
-
-		// Arrange panes and objects
-		hBox1.getChildren().addAll(idLabel, idTextField);
-		hBox1.setAlignment(Pos.CENTER);
-
-		hBox2.getChildren().addAll(nameLabel, nameTextField);
-		hBox2.setAlignment(Pos.CENTER);
-
-		hBox3.getChildren().addAll(specialistLabel, specialistComboBox);
-		hBox3.setAlignment(Pos.CENTER);
-
-		hBox4.getChildren().addAll(workTimeLabel, startTime, dashLabel, endTime, workTimeComboBox);
-		hBox4.setAlignment(Pos.CENTER);
-
-		hBox5.getChildren().addAll(qualificationLabel, qualificationTextField);
-		hBox5.setAlignment(Pos.CENTER);
-
-		hBox6.getChildren().addAll(roomLabel, roomTextField);
-		hBox6.setAlignment(Pos.CENTER);
-
-		vBox.getChildren().addAll(hBox1, hBox2, hBox3, hBox4, hBox5, hBox6, addButton);
-		vBox.setAlignment(Pos.CENTER);
-
-		borderPane.setCenter(vBox);
-		BorderPane.setAlignment(vBox, Pos.CENTER);
+		addButton.setStyle(Style.getIdleButtonStyle());
+		addButton.setLayoutX(620);
+		addButton.setLayoutY(640);
+		addButton.setPrefSize(150, 50);
+		addButton.setOnMouseEntered(e -> addButton.setStyle(Style.getHoveredButtonStyle()));
+		addButton.setOnMouseExited(e -> addButton.setStyle(Style.getIdleButtonStyle()));
 
 		// Create event handling for button
 		addButton.setOnAction(e -> {
@@ -170,8 +175,43 @@ public class Doctor {
 
 		});
 
+		// Create GridPane for Form
+		GridPane grid = new GridPane();
+		// Position
+		grid.setLayoutX(380);
+		grid.setLayoutY(260);
+		grid.setHgap(20);
+		grid.setVgap(20);
+		// Column 0
+		grid.add(idLabel, 0, 0);
+		grid.add(nameLabel, 0, 1);
+		grid.add(specialistLabel, 0, 2);
+		grid.add(workTimeLabel, 0, 3);
+		grid.add(qualificationLabel, 0, 4);
+		grid.add(roomLabel, 0, 5);
+		// Column 1
+		grid.add(idTextField, 1, 0, 4, 1);
+		grid.add(nameTextField, 1, 1, 4, 1);
+		grid.add(specialistComboBox, 1, 2, 4, 1);
+		grid.add(startTime, 1, 3);
+		grid.add(dashLabel, 2, 3);
+		grid.add(endTime, 3, 3);
+		grid.add(workTimeComboBox, 4, 3);
+		grid.add(qualificationTextField, 1, 4, 4, 1);
+		grid.add(roomTextField, 1, 5, 4, 1);
+
+		// Create pane object
+		Pane pane = new Pane();
+		pane.getChildren().addAll(grid, addButton, backButton);
+
+		// Set Background image
+		pane.setBackground(
+				new Background(new BackgroundImage(new Image("/resources/addDoctors.png"), BackgroundRepeat.REPEAT,
+						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
+						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
+
 		// Create scene object
-		Scene scene = new Scene(borderPane, 1200, 800);
+		Scene scene = new Scene(pane, 1344, 756);
 		return scene;
 
 	}
@@ -185,26 +225,41 @@ public class Doctor {
 	// Doctor main page
 	public static Scene doctorPage(Stage primaryStage) {
 
-		// Create text object
-		Text menuTitle = new Text("Doctors");
-		menuTitle.setFont(Font.font("Courier", FontWeight.BOLD, FontPosture.REGULAR, 25));
+		// Add New Doctor Button
+		ImageView addIcon = new ImageView(new Image("/resources/add.png"));
+		Button addButton = new Button("   Add New Doctor", addIcon);
+		addButton.setAlignment(Pos.CENTER_LEFT);
+		addButton.setPrefSize(400, 80);
+		addButton.setStyle(Style.getIconButtonStyle());
+		addButton.setOnMouseEntered(e -> addButton.setStyle(Style.getHoveredIconButtonStyle()));
+		addButton.setOnMouseExited(e -> addButton.setStyle(Style.getIconButtonStyle()));
 
-		// Create button objects
-		Button addButton = new Button("Add new doctor");
-		Button displayButton = new Button("Display doctors' information");
-		Button backButton = new Button("Back to main menu");
-
-		// Create VBox object
-		VBox vBox = new VBox(10);
-
-		// Create border pane object
-		BorderPane borderPane = new BorderPane();
+		// Add New Doctor Button
+		ImageView displayIcon = new ImageView(new Image("/resources/info.png"));
+		Button displayButton = new Button("   Display Doctors' Information", displayIcon);
+		displayButton.setAlignment(Pos.CENTER_LEFT);
+		displayButton.setPrefSize(400, 80);
+		displayButton.setStyle(Style.getIconButtonStyle());
+		displayButton.setOnMouseEntered(e -> displayButton.setStyle(Style.getHoveredIconButtonStyle()));
+		displayButton.setOnMouseExited(e -> displayButton.setStyle(Style.getIconButtonStyle()));
+		
+		// Back to Main Menu Button
+		ImageView backIcon = new ImageView(new Image("/resources/backBtn.png"));
+		Button backButton = new Button("   Back to Main Menu", backIcon);
+		backButton.setAlignment(Pos.CENTER_LEFT);
+		backButton.setPrefSize(400, 80);
+		backButton.setStyle(Style.getIconButtonStyle());
+		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
+		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
 
 		// Arrange panes and objects
-		vBox.getChildren().addAll(menuTitle, addButton, displayButton, backButton);
+		VBox vBox = new VBox(30);
+		vBox.getChildren().addAll(addButton, displayButton, backButton);
 		vBox.setAlignment(Pos.CENTER);
-		borderPane.setCenter(vBox);
-		BorderPane.setAlignment(vBox, Pos.CENTER);
+		vBox.setLayoutX(730);
+		vBox.setLayoutY(310);
+		Pane pane = new Pane();
+		pane.getChildren().add(vBox);
 
 		// Create event handling for buttons
 
@@ -224,8 +279,14 @@ public class Doctor {
 			primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 		});
 
+		// Set Background image
+		pane.setBackground(
+				new Background(new BackgroundImage(new Image("/resources/doctors.png"), BackgroundRepeat.REPEAT,
+						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
+						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
+
 		// Create scene object
-		Scene scene = new Scene(borderPane, 1200, 800);
+		Scene scene = new Scene(pane, 1344, 756);
 		return scene;
 	}
 
@@ -233,24 +294,30 @@ public class Doctor {
 	public static Scene showDoctorPage(Stage primaryStage) {
 
 		// Create VBox object
-		VBox vBox = new VBox(10);
+		VBox vBox = new VBox(15);
 
 		// Create HBox object for column label
 		String[] columnLabel = { "ID", "Name", "Specialist", "Work Time", "Qualification", "Room No." };
 		HBox columnLabelHBox = new HBox(10);
+		HBox line = new HBox();
 
 		for (int i = 0; i < 6; i++) {
 			StackPane stackPane = new StackPane();
 			stackPane.setPrefWidth(150);
 			stackPane.setPrefHeight(15);
 			Text text = new Text(columnLabel[i]);
+			text.setFont(Font.font("Courier", FontWeight.BOLD, 17));
 			stackPane.getChildren().add(text);
 			columnLabelHBox.getChildren().add(stackPane);
 		}
 		columnLabelHBox.setAlignment(Pos.CENTER);
 
+		line.setAlignment(Pos.CENTER);
+		line.getChildren().add(new Text(
+				"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"));
+
 		// Insert HBox object of column label into VBox object
-		vBox.getChildren().add(columnLabelHBox);
+		vBox.getChildren().addAll(columnLabelHBox, line);
 
 		// Create and insert HBox object of each doctor's info into VBox object
 		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
@@ -261,6 +328,7 @@ public class Doctor {
 				stackPane.setPrefWidth(150);
 				stackPane.setPrefHeight(15);
 				Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
 			}
@@ -270,23 +338,35 @@ public class Doctor {
 		}
 
 		// Create button object
-		Button backButton = new Button("Back");
+		ImageView backIcon = new ImageView(new Image("/resources/backBtn.png"));
+		Button backButton = new Button("Back", backIcon);
+		backButton.setStyle(Style.getIconButtonStyle());
+		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
+		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
+		// Create event handling for button
+		// Call doctorPage
+		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+		HBox HBtn = new HBox();
+		HBtn.getChildren().add(backButton);
+		HBox.setMargin(backButton, new Insets(20));
+		HBtn.setAlignment(Pos.CENTER);
 
 		// Arrange panes and objects
-		vBox.getChildren().add(backButton);
 		BorderPane borderPane = new BorderPane();
 		vBox.setAlignment(Pos.CENTER);
 		borderPane.setCenter(vBox);
+		borderPane.setBottom(HBtn);
 		BorderPane.setAlignment(vBox, Pos.CENTER);
+		BorderPane.setAlignment(HBtn, Pos.CENTER);
 
-		// Create event handling for button
-		// Call doctorPage
-		backButton.setOnAction(e -> {
-			primaryStage.setScene(doctorPage(primaryStage));
-		});
+		// Set Background image
+		borderPane.setBackground(
+				new Background(new BackgroundImage(new Image("/resources/doctorsInfo.png"), BackgroundRepeat.REPEAT,
+						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
+						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
 
 		// Create scene object
-		Scene scene = new Scene(borderPane, 1200, 800);
+		Scene scene = new Scene(borderPane, 1344, 756);
 		return scene;
 	}
 
