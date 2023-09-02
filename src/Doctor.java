@@ -234,7 +234,7 @@ public class Doctor {
 		addButton.setOnMouseEntered(e -> addButton.setStyle(Style.getHoveredIconButtonStyle()));
 		addButton.setOnMouseExited(e -> addButton.setStyle(Style.getIconButtonStyle()));
 
-		// Add New Doctor Button
+		// Display Doctor's Information Button
 		ImageView displayIcon = new ImageView(new Image("/resources/info.png"));
 		Button displayButton = new Button("   Display Doctors' Information", displayIcon);
 		displayButton.setAlignment(Pos.CENTER_LEFT);
@@ -242,7 +242,10 @@ public class Doctor {
 		displayButton.setStyle(Style.getIconButtonStyle());
 		displayButton.setOnMouseEntered(e -> displayButton.setStyle(Style.getHoveredIconButtonStyle()));
 		displayButton.setOnMouseExited(e -> displayButton.setStyle(Style.getIconButtonStyle()));
-		
+
+		// Display Doctor's Information Button
+		Button removeButton = new Button("Remove Doctor");
+
 		// Back to Main Menu Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn.png"));
 		Button backButton = new Button("   Back to Main Menu", backIcon);
@@ -254,7 +257,7 @@ public class Doctor {
 
 		// Arrange panes and objects
 		VBox vBox = new VBox(30);
-		vBox.getChildren().addAll(addButton, displayButton, backButton);
+		vBox.getChildren().addAll(addButton, displayButton, removeButton, backButton);
 		vBox.setAlignment(Pos.CENTER);
 		vBox.setLayoutX(730);
 		vBox.setLayoutY(310);
@@ -272,6 +275,11 @@ public class Doctor {
 		// Call showDoctorPage method
 		displayButton.setOnAction(e -> {
 			primaryStage.setScene(showDoctorPage(primaryStage));
+		});
+
+		// Call removeDoctor method
+		removeButton.setOnAction(e -> {
+			primaryStage.setScene(removeDoctor(primaryStage));
 		});
 
 		// Call mainMenuPage method
@@ -364,6 +372,119 @@ public class Doctor {
 				new Background(new BackgroundImage(new Image("/resources/doctorsInfo.png"), BackgroundRepeat.REPEAT,
 						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
 						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
+
+		// Create scene object
+		Scene scene = new Scene(borderPane, 1344, 756);
+		return scene;
+	}
+
+	// Remove doctor page
+	public static Scene removeDoctor(Stage primaryStage) {
+
+		// Create label object
+		Label label = new Label("Enter doctor's ID: ");
+
+		// Create combo box object
+		ComboBox<String> doctorIdComboBox = new ComboBox<>();
+		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
+			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).id);
+		}
+		doctorIdComboBox.getSelectionModel().select("Select ID --");
+		;
+
+		// Create HBox object
+		HBox hBox = new HBox();
+		hBox.setAlignment(Pos.CENTER);
+
+		// Create VBox object
+		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
+
+		// Create border pane object
+		BorderPane borderPane = new BorderPane();
+
+		// Create event handling
+		doctorIdComboBox.setOnAction(e -> {
+
+			// To ensure that there is only one infoVBox in the main vBox
+			if (vBox.getChildren().size() == 2) {
+				vBox.getChildren().remove(1);
+			}
+
+			// Create VBox object
+			VBox infoVBox = new VBox(15);
+			infoVBox.setAlignment(Pos.CENTER);
+
+			// Create HBox object for column label
+			String[] columnLabel = { "ID", "Name", "Specialist", "Work Time", "Qualification", "Room No." };
+			HBox columnLabelHBox = new HBox(10);
+			columnLabelHBox.setAlignment(Pos.CENTER);
+			for (int i = 0; i < 6; i++) {
+				StackPane stackPane = new StackPane();
+				stackPane.setPrefWidth(150);
+				stackPane.setPrefHeight(15);
+				Text text = new Text(columnLabel[i]);
+				text.setFont(Font.font("Courier", FontWeight.BOLD, 17));
+				stackPane.getChildren().add(text);
+				columnLabelHBox.getChildren().add(stackPane);
+			}
+
+			// Display selected doctor's information
+			for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
+				if (HospitalManagement.doctors.get(i).id.equals(doctorIdComboBox.getValue())) {
+
+					int index = i;
+
+					// Create HBox object for doctor's information
+					HBox infoHBox = new HBox(10);
+					infoHBox.setAlignment(Pos.CENTER);
+
+					// Create button object
+					Button removeButton = new Button("Remove");
+
+					// Get doctor's information
+					for (int j = 0; j < 6; j++) {
+						StackPane stackPane = new StackPane();
+						stackPane.setPrefWidth(150);
+						stackPane.setPrefHeight(15);
+						Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+						text.setStyle(Style.getTextStyle());
+						stackPane.getChildren().add(text);
+						infoHBox.getChildren().add(stackPane);
+					}
+
+					infoVBox.getChildren().addAll(columnLabelHBox, infoHBox, removeButton);
+
+					// Check if user would like to remove the item
+					removeButton.setOnAction(e2 -> {
+						int reply = JOptionPane.showConfirmDialog(null,
+								"Are you sure you want to remove " + HospitalManagement.doctors.get(index).name + "?",
+								"Select an Option", JOptionPane.YES_NO_OPTION);
+
+						if (reply == JOptionPane.YES_OPTION) {
+							HospitalManagement.doctors.remove(index);
+							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
+									JOptionPane.INFORMATION_MESSAGE);
+
+							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+									JOptionPane.YES_NO_OPTION);
+
+							if (reply2 == JOptionPane.YES_OPTION) {
+								primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+							} else {
+								primaryStage.setScene(doctorPage(primaryStage));
+							}
+						}
+					});
+				}
+			}
+			vBox.getChildren().add(infoVBox);
+		});
+
+		// Arrange panes and objects
+		hBox.getChildren().addAll(label, doctorIdComboBox);
+		vBox.getChildren().add(hBox);
+		borderPane.setCenter(vBox);
 
 		// Create scene object
 		Scene scene = new Scene(borderPane, 1344, 756);
