@@ -377,24 +377,28 @@ public class Doctor {
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
-		
-		
-		// Sort buttons
-		HBox HBtn2 = new HBox();
+
+		// Sort function
+		// Create button objects
 		Button sortByDefaultButton = new Button("Sort by default");
 		Button sortByIdButton = new Button("Sort by ID");
 		Button sortByNameButton = new Button("Sort by name");
+
+		// Create HBox object for sort buttons
+		HBox HBtn2 = new HBox();
 		HBtn2.getChildren().addAll(sortByDefaultButton, sortByIdButton, sortByNameButton);
 		HBtn2.setAlignment(Pos.CENTER);
-		
+
+		// Create VBox object for sort buttons and back button
 		VBox vBox2 = new VBox();
 		vBox2.getChildren().addAll(HBtn2, HBtn);
 		vBox2.setAlignment(Pos.CENTER);
-		
-		sortByDefaultButton.setOnAction(e->{
+
+		// Sort by default function
+		sortByDefaultButton.setOnAction(e -> {
 			vBox.getChildren().clear();
 			vBox.getChildren().addAll(columnLabelHBox, line);
-			// Create and insert HBox object of each doctor's info into VBox object
+
 			for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
 				HBox hBox = new HBox(10);
 
@@ -413,11 +417,14 @@ public class Doctor {
 			}
 
 		});
-		
-		sortByIdButton.setOnAction(e->{
-			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
 
+		// Sort by id function
+		sortByIdButton.setOnAction(e -> {
+
+			// Make a copy of ArrayList
+			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
 			copyDoctors.sort((o1, o2) -> o1.id.compareTo(o2.id));
+
 			vBox.getChildren().clear();
 			vBox.getChildren().addAll(columnLabelHBox, line);
 
@@ -439,9 +446,13 @@ public class Doctor {
 			}
 		});
 
-		sortByNameButton.setOnAction(e->{
+		// Sort by name function
+		sortByNameButton.setOnAction(e -> {
+
+			// Make a copy of ArrayList
 			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
 			copyDoctors.sort((o1, o2) -> o1.name.compareTo(o2.name));
+
 			vBox.getChildren().clear();
 			vBox.getChildren().addAll(columnLabelHBox, line);
 
@@ -462,7 +473,7 @@ public class Doctor {
 				vBox.getChildren().add(hBox);
 			}
 		});
-		
+
 		// Arrange panes and objects
 		BorderPane borderPane = new BorderPane();
 		vBox.setAlignment(Pos.CENTER);
@@ -494,7 +505,7 @@ public class Doctor {
 		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
-		HBox.setMargin(backButton, new Insets(70, 0, 0,75));
+		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
 
 		// Create label object
 		Label label = new Label("Enter doctor's ID:      ");
