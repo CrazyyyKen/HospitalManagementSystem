@@ -317,6 +317,85 @@ public class Doctor {
 		return output;
 	}
 
+<<<<<<< HEAD
+=======
+	// Doctor main page
+	public static Scene doctorPage(Stage primaryStage) {
+
+		// Add New Doctor Button
+		ImageView addIcon = new ImageView(new Image("/resources/add.png"));
+		Button addButton = new Button("   Add New Doctor", addIcon);
+		addButton.setAlignment(Pos.CENTER_LEFT);
+		addButton.setPrefSize(400, 80);
+		addButton.setStyle(Style.getIconButtonStyle());
+		addButton.setOnMouseEntered(e -> addButton.setStyle(Style.getHoveredIconButtonStyle()));
+		addButton.setOnMouseExited(e -> addButton.setStyle(Style.getIconButtonStyle()));
+
+		// Display Doctor's Information Button
+		ImageView displayIcon = new ImageView(new Image("/resources/info.png"));
+		Button displayButton = new Button("   Display Doctors' Information", displayIcon);
+		displayButton.setAlignment(Pos.CENTER_LEFT);
+		displayButton.setPrefSize(400, 80);
+		displayButton.setStyle(Style.getIconButtonStyle());
+		displayButton.setOnMouseEntered(e -> displayButton.setStyle(Style.getHoveredIconButtonStyle()));
+		displayButton.setOnMouseExited(e -> displayButton.setStyle(Style.getIconButtonStyle()));
+
+		// Display Doctor's Information Button
+		Button removeButton = new Button("Remove Doctor");
+
+		// Back to Main Menu Button
+		ImageView backIcon = new ImageView(new Image("/resources/backBtn.png"));
+		Button backButton = new Button("   Back to Main Menu", backIcon);
+		backButton.setAlignment(Pos.CENTER_LEFT);
+		backButton.setPrefSize(400, 80);
+		backButton.setStyle(Style.getIconButtonStyle());
+		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
+		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
+
+		// Arrange panes and objects
+		VBox vBox = new VBox(30);
+		vBox.getChildren().addAll(addButton, displayButton, removeButton, backButton);
+		vBox.setAlignment(Pos.CENTER);
+		vBox.setLayoutX(730);
+		vBox.setLayoutY(310);
+		Pane pane = new Pane();
+		pane.getChildren().add(vBox);
+
+		// Create event handling for buttons
+
+		// Call newDoctor method
+		addButton.setOnAction(e -> {
+			Doctor doctor = new Doctor();
+			primaryStage.setScene(doctor.newDoctor(primaryStage));
+		});
+
+		// Call showDoctorPage method
+		displayButton.setOnAction(e -> {
+			primaryStage.setScene(showDoctorPage(primaryStage));
+		});
+
+		// Call removeDoctor method
+		removeButton.setOnAction(e -> {
+			primaryStage.setScene(removeDoctor(primaryStage));
+		});
+
+		// Call mainMenuPage method
+		backButton.setOnAction(e -> {
+			primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+		});
+
+		// Set Background image
+		pane.setBackground(
+				new Background(new BackgroundImage(new Image("/resources/doctors.png"), BackgroundRepeat.REPEAT,
+						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
+						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
+
+		// Create scene object
+		Scene scene = new Scene(pane, 1344, 756);
+		return scene;
+	}
+
+>>>>>>> origin/main
 	// Show doctor's information page
 	public static Scene showDoctorPage(Stage primaryStage) {
 
@@ -400,6 +479,7 @@ public class Doctor {
 	// Remove doctor page
 	public static Scene removeDoctor(Stage primaryStage) {
 
+<<<<<<< HEAD
 		// Back Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
 		Button backButton = new Button("  Back", backIcon);
@@ -414,6 +494,10 @@ public class Doctor {
 		// Create label object
 		Label label = new Label("Enter doctor's ID:      ");
 		label.setStyle(Style.getTextStyle());
+=======
+		// Create label object
+		Label label = new Label("Enter doctor's ID: ");
+>>>>>>> origin/main
 
 		// Create combo box object
 		ComboBox<String> doctorIdComboBox = new ComboBox<>();
@@ -421,7 +505,11 @@ public class Doctor {
 			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).id);
 		}
 		doctorIdComboBox.getSelectionModel().select("Select ID --");
+<<<<<<< HEAD
 		doctorIdComboBox.setStyle(Style.getTextStyle());
+=======
+		;
+>>>>>>> origin/main
 
 		// Create HBox object
 		HBox hBox = new HBox();
@@ -434,6 +522,7 @@ public class Doctor {
 		// Create border pane object
 		BorderPane borderPane = new BorderPane();
 
+<<<<<<< HEAD
 		// Create button object
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("  Remove", removeIcon);
@@ -445,6 +534,8 @@ public class Doctor {
 		removeButton.setOnMouseEntered(e -> removeButton.setStyle(Style.getHoveredButtonStyle()));
 		removeButton.setOnMouseExited(e -> removeButton.setStyle(Style.getIdleButtonStyle()));
 
+=======
+>>>>>>> origin/main
 		// Create event handling
 		doctorIdComboBox.setOnAction(e -> {
 
@@ -454,7 +545,11 @@ public class Doctor {
 			}
 
 			// Create VBox object
+<<<<<<< HEAD
 			VBox infoVBox = new VBox(40);
+=======
+			VBox infoVBox = new VBox(15);
+>>>>>>> origin/main
 			infoVBox.setAlignment(Pos.CENTER);
 
 			// Create HBox object for column label
@@ -481,6 +576,12 @@ public class Doctor {
 					HBox infoHBox = new HBox(10);
 					infoHBox.setAlignment(Pos.CENTER);
 
+<<<<<<< HEAD
+=======
+					// Create button object
+					Button removeButton = new Button("Remove");
+
+>>>>>>> origin/main
 					// Get doctor's information
 					for (int j = 0; j < 6; j++) {
 						StackPane stackPane = new StackPane();
@@ -524,6 +625,7 @@ public class Doctor {
 		hBox.getChildren().addAll(label, doctorIdComboBox);
 		vBox.getChildren().add(hBox);
 		borderPane.setCenter(vBox);
+<<<<<<< HEAD
 		borderPane.setTop(BtnHbox);
 		BorderPane.setAlignment(BtnHbox, Pos.TOP_LEFT);
 
@@ -532,6 +634,8 @@ public class Doctor {
 				new Background(new BackgroundImage(new Image("/resources/removeDoctor.png"), BackgroundRepeat.REPEAT,
 						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
 						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
+=======
+>>>>>>> origin/main
 
 		// Create scene object
 		Scene scene = new Scene(borderPane, 1344, 756);
