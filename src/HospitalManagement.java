@@ -65,10 +65,10 @@ public class HospitalManagement extends Application {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 		
-		Text dateText = new Text(590, 440, dateFormat.format(date));
+		Text dateText = new Text(588, 445, dateFormat.format(date));
 		dateText.setFont(Font.font("Courier", FontWeight.BOLD, FontPosture.REGULAR, 30));
 
-		Text timeText = new Text(590, 505, timeFormat.format(time));
+		Text timeText = new Text(608, 510, timeFormat.format(time));
 		timeText.setFont(Font.font("Courier", FontWeight.BOLD, FontPosture.REGULAR, 30));
 		
 		// Create button object
@@ -78,7 +78,8 @@ public class HospitalManagement extends Application {
 		startButton.setOnMouseEntered(e -> startButton.setStyle(Style.getHoveredButtonStyle()));
         startButton.setOnMouseExited(e -> startButton.setStyle(Style.getIdleButtonStyle()));
 		// Button Position
-		startButton.setLayoutX(580);
+        startButton.setPrefSize(200, 70);
+		startButton.setLayoutX(570);
 		startButton.setLayoutY(550);
 		
 		// Create event handling for startButton
@@ -95,7 +96,7 @@ public class HospitalManagement extends Application {
 		// Set Background image
 		pane.setBackground(new Background(
                 new BackgroundImage(
-                        new Image("/resources/welcomeBGR.png"),
+                        new Image("/resources/welcome.png"),
                         BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT,
                         new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
                         new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true)
@@ -113,38 +114,72 @@ public class HospitalManagement extends Application {
 	public static Scene mainMenuPage(Stage primaryStage) {
 
 		// Doctor Button Object
-		Image docImage = new Image("/resources/exitBtn.png");
+		Image docImage = new Image("/resources/docIcon.png");
 		ImageView docIcon = new ImageView(docImage);
-		Button doctorButton = new Button("Doctors", docIcon);
-		doctorButton.setPrefSize(200, 50);
+		Button doctorButton = new Button("   Doctors", docIcon);
+		doctorButton.setAlignment(Pos.CENTER_LEFT);
+		doctorButton.setPrefSize(250, 50);
 		doctorButton.setStyle(Style.getIdleButtonStyle());
 		doctorButton.setOnMouseEntered(e -> doctorButton.setStyle(Style.getHoveredIconButtonStyle()));
 		doctorButton.setOnMouseExited(e -> doctorButton.setStyle(Style.getIconButtonStyle()));
 		doctorButton.setOnMouseClicked(e ->primaryStage.setScene(Doctor.doctorPage(primaryStage)));	// Go to doctor
         
 		// Patient Button Object
-		Button patientButton = new Button("Patients");
-//		Image patientImage = new Image("/resources/exitBtn.png");
-//		ImageView patientIcon = new ImageView(patientImage);
-//		Button patientButton = new Button("Patients", patientIcon);
-//		patientButton.setFont(Font.font("Courier", FontWeight.BOLD, 20));
-//		patientButton.setStyle(ICON_BUTTON_STYLE);
-//		patientButton.setOnMouseEntered(e -> patientButton.setStyle(HOVERED_ICON_BUTTON_STYLE));
-//		patientButton.setOnMouseExited(e -> patientButton.setStyle(ICON_BUTTON_STYLE));
-//		patientButton.setOnMouseClicked(e ->primaryStage.setScene(Patient.patientPage(primaryStage)));	// Go to doctor
+		ImageView patientIcon = new ImageView(new Image("/resources/patientIcon.png"));
+		Button patientButton = new Button("   Patients", patientIcon);
+		patientButton.setAlignment(Pos.CENTER_LEFT);
+		patientButton.setPrefSize(250, 50);
+		patientButton.setStyle(Style.getIconButtonStyle());
+		patientButton.setOnMouseEntered(e -> patientButton.setStyle(Style.getHoveredIconButtonStyle()));
+		patientButton.setOnMouseExited(e -> patientButton.setStyle(Style.getIconButtonStyle()));
+		patientButton.setOnMouseClicked(e ->primaryStage.setScene(Patient.patientPage(primaryStage)));	// Go to patient
         
+		// Staff Button
+		ImageView staffIcon = new ImageView(new Image("/resources/staffIcon.png"));
+		Button staffButton = new Button("   Staffs", staffIcon);
+		staffButton.setAlignment(Pos.CENTER_LEFT);
+		staffButton.setPrefSize(250, 50);
+		staffButton.setStyle(Style.getIconButtonStyle());
+		staffButton.setOnMouseEntered(e -> staffButton.setStyle(Style.getHoveredIconButtonStyle()));
+		staffButton.setOnMouseExited(e -> staffButton.setStyle(Style.getIconButtonStyle()));
+		staffButton.setOnMouseClicked(e ->primaryStage.setScene(Staff.staffPage(primaryStage)));	// Go to Staff
 		
+		// Medical Button
+		ImageView medicalIcon = new ImageView(new Image("/resources/medIcon.png"));
+		Button medicalButton = new Button("   Medicals", medicalIcon);
+		medicalButton.setAlignment(Pos.CENTER_LEFT);
+		medicalButton.setPrefSize(250, 50);
+		medicalButton.setStyle(Style.getIconButtonStyle());
+		medicalButton.setOnMouseEntered(e -> medicalButton.setStyle(Style.getHoveredIconButtonStyle()));
+		medicalButton.setOnMouseExited(e -> medicalButton.setStyle(Style.getIconButtonStyle()));
+		medicalButton.setOnMouseClicked(e ->primaryStage.setScene(Medical.medicalPage(primaryStage)));	// Go to Staff
 		
+		// Lab Buttons
+		ImageView labIcon = new ImageView(new Image("/resources/labIcon.png"));
+		Button labButton = new Button("   Laboratories", labIcon);
+		labButton.setAlignment(Pos.CENTER_LEFT);
+		labButton.setPrefSize(250, 50);
+		labButton.setStyle(Style.getIconButtonStyle());
+		labButton.setOnMouseEntered(e -> labButton.setStyle(Style.getHoveredIconButtonStyle()));
+		labButton.setOnMouseExited(e -> labButton.setStyle(Style.getIconButtonStyle()));
+		labButton.setOnMouseClicked(e ->primaryStage.setScene(Lab.labPage(primaryStage)));	// Go to Staff
 		
-		Button medicalButton = new Button("Medicals");
-		Button labButton = new Button("Laboratories");
-		Button facilityButton = new Button("Facilities");
-		Button staffButton = new Button("Staffs");
+		// Facilities Button
+		ImageView facilityIcon = new ImageView(new Image("/resources/facilityIcon.png"));
+		Button facilityButton = new Button("   Facilities", facilityIcon);
+		facilityButton.setAlignment(Pos.CENTER_LEFT);
+		facilityButton.setPrefSize(250, 50);
+		facilityButton.setStyle(Style.getIconButtonStyle());
+		facilityButton.setOnMouseEntered(e -> facilityButton.setStyle(Style.getHoveredIconButtonStyle()));
+		facilityButton.setOnMouseExited(e -> facilityButton.setStyle(Style.getIconButtonStyle()));
+		facilityButton.setOnMouseClicked(e ->primaryStage.setScene(Facility.facilityPage(primaryStage)));	// Go to Staff
+		
 		
 		// Exit Button
 		ImageView exitIcon = new ImageView( new Image("/resources/exitBtn.png"));
-		Button exitButton = new Button("Exit",exitIcon);
-		exitButton.setLayoutX(605);
+		Button exitButton = new Button("   Exit",exitIcon);
+		exitButton.setPrefSize(170, 50);
+		exitButton.setLayoutX(590);
         exitButton.setLayoutY(600);
 		exitButton.setStyle(Style.getIconButtonStyle());
 		exitButton.setOnMouseEntered(e -> exitButton.setStyle(Style.getHoveredIconButtonStyle()));
@@ -162,12 +197,12 @@ public class HospitalManagement extends Application {
 		// Arrange panes and objects
 		vBox1.getChildren().addAll(doctorButton, patientButton,staffButton);
 		vBox1.setAlignment(Pos.CENTER);
-		vBox1.setLayoutX(200);
-		vBox1.setLayoutY(200);
+		vBox1.setLayoutX(400);
+		vBox1.setLayoutY(300);
 		vBox2.getChildren().addAll(medicalButton, labButton, facilityButton);
 		vBox2.setAlignment(Pos.CENTER);
-		vBox2.setLayoutX(400);
-		vBox2.setLayoutY(400);
+		vBox2.setLayoutX(700);
+		vBox2.setLayoutY(300);
 		pane.getChildren().addAll(vBox1,vBox2, exitButton);
 
 		// Set Background image
