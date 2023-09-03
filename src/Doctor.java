@@ -377,14 +377,99 @@ public class Doctor {
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
+		
+		
+		// Sort buttons
+		HBox HBtn2 = new HBox();
+		Button sortByDefaultButton = new Button("Sort by default");
+		Button sortByIdButton = new Button("Sort by ID");
+		Button sortByNameButton = new Button("Sort by name");
+		HBtn2.getChildren().addAll(sortByDefaultButton, sortByIdButton, sortByNameButton);
+		HBtn2.setAlignment(Pos.CENTER);
+		
+		VBox vBox2 = new VBox();
+		vBox2.getChildren().addAll(HBtn2, HBtn);
+		vBox2.setAlignment(Pos.CENTER);
+		
+		sortByDefaultButton.setOnAction(e->{
+			vBox.getChildren().clear();
+			vBox.getChildren().addAll(columnLabelHBox, line);
+			// Create and insert HBox object of each doctor's info into VBox object
+			for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
+				HBox hBox = new HBox(10);
 
+				for (int j = 0; j < 6; j++) {
+					StackPane stackPane = new StackPane();
+					stackPane.setPrefWidth(150);
+					stackPane.setPrefHeight(15);
+					Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+					text.setStyle(Style.getTextStyle());
+					stackPane.getChildren().add(text);
+					hBox.getChildren().add(stackPane);
+				}
+
+				hBox.setAlignment(Pos.CENTER);
+				vBox.getChildren().add(hBox);
+			}
+
+		});
+		
+		sortByIdButton.setOnAction(e->{
+			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
+
+			copyDoctors.sort((o1, o2) -> o1.id.compareTo(o2.id));
+			vBox.getChildren().clear();
+			vBox.getChildren().addAll(columnLabelHBox, line);
+
+			for (int i = 0; i < copyDoctors.size(); i++) {
+				HBox hBox = new HBox(10);
+
+				for (int j = 0; j < 6; j++) {
+					StackPane stackPane = new StackPane();
+					stackPane.setPrefWidth(150);
+					stackPane.setPrefHeight(15);
+					Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
+					text.setStyle(Style.getTextStyle());
+					stackPane.getChildren().add(text);
+					hBox.getChildren().add(stackPane);
+				}
+
+				hBox.setAlignment(Pos.CENTER);
+				vBox.getChildren().add(hBox);
+			}
+		});
+
+		sortByNameButton.setOnAction(e->{
+			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
+			copyDoctors.sort((o1, o2) -> o1.name.compareTo(o2.name));
+			vBox.getChildren().clear();
+			vBox.getChildren().addAll(columnLabelHBox, line);
+
+			for (int i = 0; i < copyDoctors.size(); i++) {
+				HBox hBox = new HBox(10);
+
+				for (int j = 0; j < 6; j++) {
+					StackPane stackPane = new StackPane();
+					stackPane.setPrefWidth(150);
+					stackPane.setPrefHeight(15);
+					Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
+					text.setStyle(Style.getTextStyle());
+					stackPane.getChildren().add(text);
+					hBox.getChildren().add(stackPane);
+				}
+
+				hBox.setAlignment(Pos.CENTER);
+				vBox.getChildren().add(hBox);
+			}
+		});
+		
 		// Arrange panes and objects
 		BorderPane borderPane = new BorderPane();
 		vBox.setAlignment(Pos.CENTER);
 		borderPane.setCenter(vBox);
-		borderPane.setBottom(HBtn);
+		borderPane.setBottom(vBox2);
 		BorderPane.setAlignment(vBox, Pos.CENTER);
-		BorderPane.setAlignment(HBtn, Pos.CENTER);
+		BorderPane.setAlignment(vBox2, Pos.CENTER);
 
 		// Set Background image
 		borderPane.setBackground(
