@@ -1,5 +1,4 @@
-import java.time.LocalDate;
-import java.util.Scanner;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -7,9 +6,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,6 +24,7 @@ import resources.Style;
 public class Lab {
 	private String lab;
 	private int cost;
+	private String errorMsg; // Only used for input validation
 
 	public Lab() {
 	};
@@ -164,7 +162,34 @@ public class Lab {
 
 		// Create event handling for button
 		addButton.setOnAction(e -> {
-			// ACTION
+			// Initialization of data field
+			String labNameInput = nameTextField.getText();
+			String costInput = costTextField.getText();
+			
+			// Validate user input
+			if(labValidation(nameTextField, costTextField, labNameInput, costInput, HospitalManagement.laboratories)) {
+				// Assign value to facility object's data field
+				lab = labNameInput;
+				cost = Integer.parseInt(costInput);
+			
+				// Add facility object to ArrayList
+				HospitalManagement.laboratories.add(this);
+				
+				// Check if user would like to return to previous section or return to main menu
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
+	
+				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+						JOptionPane.YES_NO_OPTION);
+	
+				if (reply == JOptionPane.YES_OPTION) {
+					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+				} else {
+					primaryStage.setScene(labPage(primaryStage));
+				}
+			}
+			else {
+				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		});
 
 		// Create gridPane for Form
@@ -201,5 +226,45 @@ public class Lab {
 
 	public void labList() {
 		System.out.println(lab + "\t" + cost);
+	}
+	
+	// Input validation method
+	private boolean labValidation(TextField nameTextField, TextField costTextField, String lab, String cost, ArrayList<Lab> arrayList) {
+		// Check for empty input
+		if(lab.isEmpty() || cost.isEmpty()) {
+			errorMsg = "Input cannot be empty";
+			return false;
+		}
+		
+		// Check if cost contains non-number value or negative number
+		try {
+			Integer.parseInt(cost);
+			if (Integer.parseInt(cost) <= 0) {
+				costTextField.clear();
+				errorMsg = "Cost must be a positive number without any spacing.";
+				return false;
+			}
+
+		} catch (NumberFormatException e) {
+			costTextField.clear();
+			this.errorMsg = "Cost must be a positive number without any spacing.";
+			return false;
+		}
+		
+		// Check if laboratory name is duplicated
+		for(int i = 0; i < arrayList.size(); ++i) {
+			if(arrayList.get(i).lab.equals(lab)) {
+				nameTextField.clear();
+				errorMsg = "Laboratory already exists in record";
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	// Getter
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 }

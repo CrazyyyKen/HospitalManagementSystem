@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -20,8 +21,6 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import resources.Style;
 
@@ -33,6 +32,7 @@ public class Patient {
 	private String sex;
 	private String admitStatus;
 	private int age;
+	private String errorMsg;
 
 	public Patient() {
 	}
@@ -209,8 +209,50 @@ public class Patient {
 
 		// Create event handling for button
 		addButton.setOnAction(e -> {
-			// Action
+			
+			// Initialization of data field
+			String idInput = idTextField.getText();
+			String nameInput = nameTextField.getText();
+			String diseaseInput = diseaseTextField.getText();
+			String sexInput = sexComboBox.getValue();
+			String admitStatusInput = admitStatusComboBox.getValue();
+			String ageInput = Integer.toString(ageSpinner.getValue());
+			
+			// Combine text field into TextField array
+			TextField[] textFieldArray = {idTextField, nameTextField, diseaseTextField};
+			
+			// Combine String input into an array
+			String[] inputArray = {idInput, nameInput, diseaseInput, sexInput, admitStatusInput, ageInput};
+			
+			// Validate user input
+			if(patientValidation(textFieldArray, inputArray, HospitalManagement.patients)) {
+				
+				// Assign values to Patient's data field
+				id = String.format("%03d", Integer.parseInt(idInput));
+				name = nameInput;
+				disease = diseaseInput;
+				sex = sexInput;
+				admitStatus = admitStatusInput;
+				age = Integer.parseInt(ageInput);
+				
+				// Add doctor object to ArrayList
+				HospitalManagement.patients.add(this);
 
+				// Check if user would like to return to previous section or return to main menu
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
+
+				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+						JOptionPane.YES_NO_OPTION);
+
+				if (reply == JOptionPane.YES_OPTION) {
+					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+				} else {
+					primaryStage.setScene(patientPage(primaryStage));
+				}
+
+			} else {
+				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		});
 
 		// Create GridPane for Form
@@ -273,4 +315,36 @@ public class Patient {
 		System.out.println(output);
 	}
 
+	// Input validation method
+	private boolean patientValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Patient> arrayList) {
+		
+		// Check for empty input
+		for (int i = 0; i < inputArray.length; i++) {
+			if (inputArray[i].isEmpty()) {
+				errorMsg = "Input cannot be empty.";
+				return false;
+			}
+		}
+		
+		// Check if ID consists of positive numbers only or not
+		try {
+			Integer.parseInt(inputArray[0]);
+			if (Integer.parseInt(inputArray[0]) <= 0) {
+				textFieldArray[0].clear();
+				this.errorMsg = "ID must be a positive number without any spacing.";
+				return false;
+			}
+
+		} catch (NumberFormatException e) {
+			textFieldArray[0].clear();
+			this.errorMsg = "ID must be a positive number without any spacing.";
+			return false;
+		}		
+		return true;
+	}
+	
+	// Getter
+	public String getErrorMsg() {
+		return errorMsg;
+	}
 }

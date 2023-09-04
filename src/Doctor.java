@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -37,7 +39,7 @@ public class Doctor {
 	private String workTime;
 	private String qualification;
 	private int room;
-	private String errorMsg;
+	private String errorMsg; // Only used for input validation
 
 	// Default constructor
 	public Doctor() {
@@ -65,7 +67,7 @@ public class Doctor {
 		addButton.setOnMouseEntered(e -> addButton.setStyle(Style.getHoveredIconButtonStyle()));
 		addButton.setOnMouseExited(e -> addButton.setStyle(Style.getIconButtonStyle()));
 
-		// Display Doctor's Information Button
+		// Display Doctors' Information Button
 		ImageView displayIcon = new ImageView(new Image("/resources/info.png"));
 		Button displayButton = new Button("   Display Doctors' Information", displayIcon);
 		displayButton.setAlignment(Pos.CENTER_LEFT);
@@ -383,9 +385,26 @@ public class Doctor {
 		Button sortByDefaultButton = new Button("Sort by default");
 		Button sortByIdButton = new Button("Sort by ID");
 		Button sortByNameButton = new Button("Sort by name");
+		// Button Style
+		sortByDefaultButton.setStyle(Style.getIdleButtonStyle());
+		sortByDefaultButton.setOnMouseEntered(e -> sortByDefaultButton.setStyle(Style.getHoveredButtonStyle()));
+		sortByDefaultButton.setOnMouseExited(e -> sortByDefaultButton.setStyle(Style.getIdleButtonStyle()));
+
+		sortByIdButton.setStyle(Style.getIdleButtonStyle());
+		sortByIdButton.setOnMouseEntered(e -> sortByIdButton.setStyle(Style.getHoveredButtonStyle()));
+		sortByIdButton.setOnMouseExited(e -> sortByIdButton.setStyle(Style.getIdleButtonStyle()));
+
+		sortByNameButton.setStyle(Style.getIdleButtonStyle());
+		sortByNameButton.setOnMouseEntered(e -> sortByNameButton.setStyle(Style.getHoveredButtonStyle()));
+		sortByNameButton.setOnMouseExited(e -> sortByNameButton.setStyle(Style.getIdleButtonStyle()));
+
+		// Button Size
+		sortByDefaultButton.setPrefSize(210, 70);
+		sortByIdButton.setPrefSize(210, 70);
+		sortByNameButton.setPrefSize(210, 70);
 
 		// Create HBox object for sort buttons
-		HBox HBtn2 = new HBox();
+		HBox HBtn2 = new HBox(15);
 		HBtn2.getChildren().addAll(sortByDefaultButton, sortByIdButton, sortByNameButton);
 		HBtn2.setAlignment(Pos.CENTER);
 
@@ -393,6 +412,10 @@ public class Doctor {
 		VBox vBox2 = new VBox();
 		vBox2.getChildren().addAll(HBtn2, HBtn);
 		vBox2.setAlignment(Pos.CENTER);
+
+		// Create a HBox object to limit the height of the displayed information
+		HBox heightLimit = new HBox();
+		heightLimit.setPrefHeight(100);
 
 		// Sort by default function
 		sortByDefaultButton.setOnAction(e -> {
@@ -479,8 +502,10 @@ public class Doctor {
 		vBox.setAlignment(Pos.CENTER);
 		borderPane.setCenter(vBox);
 		borderPane.setBottom(vBox2);
+		borderPane.setTop(heightLimit);
 		BorderPane.setAlignment(vBox, Pos.CENTER);
 		BorderPane.setAlignment(vBox2, Pos.CENTER);
+		BorderPane.setAlignment(heightLimit, Pos.TOP_CENTER);
 
 		// Set Background image
 		borderPane.setBackground(
@@ -634,8 +659,8 @@ public class Doctor {
 		return scene;
 	}
 
-	// Input validation
-	public boolean doctorValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Doctor> arrayList) {
+	// Input validation method
+	private boolean doctorValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Doctor> arrayList) {
 
 		// Initialization of data fields
 		String idInput = inputArray[0];
@@ -699,6 +724,7 @@ public class Doctor {
 
 	}
 
+	// Getter
 	public String getErrorMsg() {
 		return errorMsg;
 	}

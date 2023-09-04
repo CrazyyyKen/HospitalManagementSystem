@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -24,9 +24,12 @@ import resources.Style;
 public class Facility {
 	
 	private String facility;
+	private String errorMsg; // Only used for input validation
 	
+	// Default constructor
 	public Facility() {};
 	
+	// Constructor with argument
 	public Facility(String facility) {
 		this.facility = facility;
 	}
@@ -157,7 +160,32 @@ public class Facility {
 
 		// Create event handling for button
 		addButton.setOnAction(e -> {
-			// ACTION
+			// Initialization of data field
+			String facilityInput = nameTextField.getText();
+			
+			// Validate user input
+			if(facilityValidation(nameTextField, facilityInput, HospitalManagement.facilities)) {
+				// Assign value to facility object's data field
+				facility = facilityInput;
+			
+				// Add facility object to ArrayList
+				HospitalManagement.facilities.add(this);
+				
+				// Check if user would like to return to previous section or return to main menu
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
+	
+				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+						JOptionPane.YES_NO_OPTION);
+	
+				if (reply == JOptionPane.YES_OPTION) {
+					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+				} else {
+					primaryStage.setScene(facilityPage(primaryStage));
+				}
+			}
+			else {
+				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		});
 
 		// Create gridPane for Form
@@ -191,5 +219,31 @@ public class Facility {
 	
 	public void showFacility() {
 		System.out.println(facility);
+	}
+	
+	// Input validation method
+	private boolean facilityValidation(TextField textField, String input, ArrayList<Facility> arrayList) {
+		// Check for empty input
+		if(input.isEmpty()) {
+			errorMsg = "Input cannot be empty";
+			return false;
+		}
+		
+		// Check if facility name is duplicated
+		for(int i = 0; i < arrayList.size(); ++i) {
+			if(arrayList.get(i).facility.equals(input)) {
+				textField.clear();
+				errorMsg = "Facility already exists in record";
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	// Getter
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 }

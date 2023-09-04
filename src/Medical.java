@@ -1,5 +1,5 @@
 import java.time.LocalDate;
-import java.util.Scanner;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -7,7 +7,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -21,10 +20,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import resources.Style;
 
@@ -33,17 +29,18 @@ public class Medical {
 	private String manufacturer;
 	private String expiryDate;
 	private int cost;
-	private int count;
+	private int unit;
+	private String errorMsg; // Only used for input validation
 
 	public Medical() {
 	};
 
-	public Medical(String name, String manufacturer, String expiryDate, int cost, int count) {
+	public Medical(String name, String manufacturer, String expiryDate, int cost, int unit) {
 		this.name = name;
 		this.manufacturer = manufacturer;
 		this.expiryDate = expiryDate;
 		this.cost = cost;
-		this.count = count;
+		this.unit = unit;
 	}
 
 	// Medical main page
@@ -174,7 +171,7 @@ public class Medical {
 		TextField costTextField = new TextField();
 		costTextField.setStyle(Style.getTextfieldStyle());
 		costTextField.setPromptText("100");
-		
+
 		// Create spinner objects (UNIT)
 		Spinner<Integer> unit = new Spinner<>(0, 100000, 5);
 		unit.setEditable(true);
@@ -183,18 +180,17 @@ public class Medical {
 		unit.setPrefWidth(230);
 
 		// DatePicker
-        DatePicker datePicker = new DatePicker();
-        datePicker.setStyle(Style.getTextStyle());
-        // Set today's date as the default value
-        datePicker.setValue(LocalDate.now());
-        datePicker.setOnAction( e -> {
-            // get the date picker value
-            LocalDate date = datePicker.getValue();
-            // TO DO: FOR OUTPUT 
-        });
-        // show week numbers
-        datePicker.setShowWeekNumbers(true);
-        
+		DatePicker datePicker = new DatePicker();
+		datePicker.setStyle(Style.getTextStyle());
+		// Set today's date as the default value
+		datePicker.setValue(LocalDate.now());
+		datePicker.setOnAction(e -> {
+			// get the date picker value
+			LocalDate date = datePicker.getValue();
+			// TO DO: FOR OUTPUT
+		});
+		// show week numbers
+		datePicker.setShowWeekNumbers(true);
 
 		// Create button object
 		Button addButton = new Button("Add");
@@ -207,7 +203,44 @@ public class Medical {
 
 		// Create event handling for button
 		addButton.setOnAction(e -> {
-			// ACTION
+			// Initialization of data field
+			String nameInput = nameTextField.getText();
+			String manufacturerInput = manufacturerTextField.getText();
+			String costInput = costTextField.getText();
+
+			// Combine text fields into TextField array
+			TextField textFieldArray[] = { nameTextField, manufacturerTextField, costTextField };
+
+			// Combine String input into an array
+			String inputArray[] = { nameInput, manufacturerInput, costInput };
+
+			// Validate user input
+			if (medicalValidation(textFieldArray, inputArray, HospitalManagement.medicals)) {
+				// Assign value to data field
+				name = nameInput;
+				manufacturer = manufacturerInput;
+				cost = Integer.parseInt(costInput);
+				LocalDate selectedDate = datePicker.getValue();
+				expiryDate = selectedDate.toString();
+				this.unit = unit.getValue();
+
+				// Add facility object to ArrayList
+				HospitalManagement.medicals.add(this);
+
+				// Check if user would like to return to previous section or return to main menu
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
+
+				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+						JOptionPane.YES_NO_OPTION);
+
+				if (reply == JOptionPane.YES_OPTION) {
+					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+				} else {
+					primaryStage.setScene(medicalPage(primaryStage));
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		});
 
 		// Create gridPane for Form
@@ -230,7 +263,6 @@ public class Medical {
 		grid.add(costTextField, 1, 3);
 		grid.add(unit, 1, 4);
 
-
 		// Create pane object
 		Pane pane = new Pane();
 		pane.getChildren().addAll(grid, addButton, backButton);
@@ -249,5 +281,39 @@ public class Medical {
 
 	public void findMedical() {
 		System.out.println(name + "\t" + manufacturer + "\t" + expiryDate + "\t" + cost);
+	}
+
+	// Input validation method
+	private boolean medicalValidation(TextField[] textField, String[] inputArray, ArrayList<Medical> arrayList) {
+
+		// Check empty input
+		for (int i = 0; i < inputArray.length; i++) {
+			if (inputArray[i].isEmpty()) {
+				errorMsg = "Input cannot be empty.";
+				return false;
+			}
+		}
+
+		// Check if cost contains non-number value or negative number
+		try {
+			Integer.parseInt(inputArray[2]);
+			if (Integer.parseInt(inputArray[2]) <= 0) {
+				textField[2].clear();
+				errorMsg = "Cost must be a positive number without any spacing.";
+				return false;
+			}
+
+		} catch (NumberFormatException e) {
+			textField[2].clear();
+			this.errorMsg = "Cost must be a positive number without any spacing.";
+			return false;
+		}
+
+		return true;
+	}
+
+	// Getter
+	public String getErrorMsg() {
+		return errorMsg;
 	}
 }

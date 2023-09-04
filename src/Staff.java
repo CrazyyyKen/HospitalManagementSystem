@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -8,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,14 +25,13 @@ import resources.Style;
 
 public class Staff {
 
-	Scanner input = new Scanner(System.in);
-
 	// Data fields
 	private String id;
 	private String name;
 	private String designation;
 	private String sex;
 	private int salary;
+	private String errorMsg;
 
 	// Default constructor
 	public Staff() {
@@ -72,7 +71,7 @@ public class Staff {
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("   Remove Staff", removeIcon);
 		removeButton.setAlignment(Pos.CENTER_LEFT);
-		removeButton.setPrefSize(400, 80);
+		removeButton.setPrefSize(380, 80);
 		removeButton.setStyle(Style.getIconButtonStyle());
 		removeButton.setOnMouseEntered(e -> removeButton.setStyle(Style.getHoveredIconButtonStyle()));
 		removeButton.setOnMouseExited(e -> removeButton.setStyle(Style.getIconButtonStyle()));
@@ -173,7 +172,7 @@ public class Staff {
 		nameTextField.setPromptText("Soh How Ken");
 		TextField salaryTextField = new TextField();
 		salaryTextField.setStyle(Style.getTextfieldStyle());
-		salaryTextField.setPromptText("3000.00");
+		salaryTextField.setPromptText("3000");
 
 		// Create combo box objects
 		String[] designationArray = { "Doctor", "Nurse", "Pharmacist", "Human Resources Manager", "Finance Manager",
@@ -201,8 +200,47 @@ public class Staff {
 		// Create event handling for button
 		addButton.setOnAction(e -> {
 
-			// action
+			// Initialization of data field
+			String idInput = idTextField.getText();
+			String nameInput = nameTextField.getText();
+			String salaryInput = salaryTextField.getText();
+			String designationInput = designationComboBox.getValue();
+			String sexInput = sexComboBox.getValue();
+			
+			// Combine text field into TextField array
+			TextField[] textFieldArray = {idTextField, nameTextField, salaryTextField};
+			
+			// Combine String input into an array
+			String[] inputArray = {idInput, nameInput, salaryInput, designationInput,sexInput};
+			
+			// Validate user input
+			if(staffValidation(textFieldArray, inputArray, HospitalManagement.staffs)) {
+				
+				// Assign values to Staff's data field
+				id = String.format("%03d", Integer.parseInt(idInput));
+				name = nameInput;
+				salary = Integer.parseInt(salaryInput);
+				designation = designationInput;
+				sex = sexInput;
+				
+				// Add Staff object to ArrayList
+				HospitalManagement.staffs.add(this);
 
+				// Check if user would like to return to previous section or return to main menu
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
+
+				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
+						JOptionPane.YES_NO_OPTION);
+
+				if (reply == JOptionPane.YES_OPTION) {
+					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
+				} else {
+					primaryStage.setScene(staffPage(primaryStage));
+				}
+
+			} else {
+				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		});
 
 		// Create GridPane for Form
@@ -248,4 +286,60 @@ public class Staff {
 		System.out.println(output);
 	}
 
+	// Input validation method
+	private boolean staffValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Staff> arrayList) {
+		
+		// Check for empty input
+		for (int i = 0; i < inputArray.length; i++) {
+			if (inputArray[i].isEmpty()) {
+				errorMsg = "Input cannot be empty.";
+				return false;
+			}
+		}
+		
+		// Check if ID consists of positive numbers only or not
+		try {
+			Integer.parseInt(inputArray[0]);
+			if (Integer.parseInt(inputArray[0]) <= 0) {
+				textFieldArray[0].clear();
+				this.errorMsg = "ID must be a positive number without any spacing.";
+				return false;
+			}
+
+		} catch (NumberFormatException e) {
+			textFieldArray[0].clear();
+			this.errorMsg = "ID must be a positive number without any spacing.";
+			return false;
+		}
+		
+		// Check if salary contains non-number value or negative number
+		try {
+			Integer.parseInt(inputArray[2]);
+			if (Integer.parseInt(inputArray[2]) <= 0) {
+				textFieldArray[2].clear();
+				errorMsg = "Salary must be a positive number without any spacing.";
+				return false;
+			}
+
+		} catch (NumberFormatException e) {
+			textFieldArray[2].clear();
+			this.errorMsg = "Salary must be a positive number without any spacing.";
+			return false;
+		}
+		
+		// Check if ID is duplicated
+		for (int i = 0; i < arrayList.size(); i++) {
+			if (arrayList.get(i).id.equals(String.format("%03d", Integer.parseInt(inputArray[0])))) {
+				textFieldArray[0].clear();
+				this.errorMsg = "ID already exists in record.";
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	// Getter
+	public String getErrorMsg() {
+		return errorMsg;
+	}
 }
