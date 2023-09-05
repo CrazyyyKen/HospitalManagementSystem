@@ -1,7 +1,6 @@
+import java.sql.*;
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -9,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -99,7 +99,7 @@ public class Doctor {
 		VBox vBox = new VBox(30);
 		vBox.getChildren().addAll(addButton, displayButton, removeButton);
 		vBox.setAlignment(Pos.CENTER);
-		vBox.setLayoutX(730);
+		vBox.setLayoutX(728);
 		vBox.setLayoutY(310);
 		Pane pane = new Pane();
 		pane.getChildren().addAll(vBox, backButton);
@@ -148,7 +148,7 @@ public class Doctor {
 		return scene;
 	}
 
-	// Prompts user to enter information of doctor
+	// Prompts user to enter new information of doctor
 	public Scene newDoctor(Stage primaryStage) {
 
 		// Create button object
@@ -183,13 +183,13 @@ public class Doctor {
 		idTextField.setPromptText("123");
 		TextField nameTextField = new TextField();
 		nameTextField.setStyle(Style.getTextfieldStyle());
-		nameTextField.setPromptText("Dr. Goh Kai Wen");
+		nameTextField.setPromptText("Goh Kai Wen");
 		TextField qualificationTextField = new TextField();
 		qualificationTextField.setStyle(Style.getTextfieldStyle());
-		qualificationTextField.setPromptText("MBSS, MD");
+		qualificationTextField.setPromptText("MBBS, MD");
 		TextField roomTextField = new TextField();
 		roomTextField.setStyle(Style.getTextfieldStyle());
-		roomTextField.setPromptText("R003");
+		roomTextField.setPromptText("001");
 
 		// Create spinner objects
 		Spinner<Integer> startTime = new Spinner<>(1, 12, 8);
@@ -207,6 +207,7 @@ public class Doctor {
 		specialistComboBox.setStyle(Style.getTextStyle());
 		specialistComboBox.getItems().addAll(specialistArray);
 		specialistComboBox.getSelectionModel().selectFirst();
+		specialistComboBox.setPrefWidth(350);
 
 		ComboBox<String> workTimeComboBox = new ComboBox<>();
 		workTimeComboBox.setStyle(Style.getTextStyle());
@@ -253,9 +254,22 @@ public class Doctor {
 
 				// Add doctor object to ArrayList
 				HospitalManagement.doctors.add(this);
+				
+				// Add doctor to Database
+				if(HospitalManagement.connect && HospitalManagement.storeData) {
+					try {
+						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+						connection.createStatement().executeUpdate(
+								"insert into Doctor values('" + id + "', '"+ name + "', '"+ specialist + "', '"+ workTime + "', '"+ qualification + "', "+ room + ")");
+						connection.close();
+					} catch (SQLException e1) {
+						// Exception Catch
+						e1.printStackTrace();
+					}
+				}
 
 				// Check if user would like to return to previous section or return to main menu
-				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Success Message", JOptionPane.INFORMATION_MESSAGE);
 
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 						JOptionPane.YES_NO_OPTION);
@@ -328,25 +342,22 @@ public class Doctor {
 		// Create HBox object for column label
 		String[] columnLabel = { "ID", "Name", "Specialist", "Work Time", "Qualification", "Room No." };
 		HBox columnLabelHBox = new HBox(10);
-		HBox line = new HBox();
+		columnLabelHBox.setStyle(Style.getHEADERStyle());
+		columnLabelHBox.setPrefHeight(50);
 
 		for (int i = 0; i < 6; i++) {
 			StackPane stackPane = new StackPane();
-			stackPane.setPrefWidth(150);
+			stackPane.setPrefWidth(160);
 			stackPane.setPrefHeight(15);
 			Text text = new Text(columnLabel[i]);
-			text.setFont(Font.font("Courier", FontWeight.BOLD, 17));
+			text.setFont(Font.font("Courier", FontWeight.BOLD, 20));
 			stackPane.getChildren().add(text);
 			columnLabelHBox.getChildren().add(stackPane);
 		}
 		columnLabelHBox.setAlignment(Pos.CENTER);
 
-		line.setAlignment(Pos.CENTER);
-		line.getChildren().add(new Text(
-				"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"));
-
 		// Insert HBox object of column label into VBox object
-		vBox.getChildren().addAll(columnLabelHBox, line);
+		vBox.getChildren().addAll(columnLabelHBox);
 
 		// Create and insert HBox object of each doctor's info into VBox object
 		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
@@ -354,7 +365,7 @@ public class Doctor {
 
 			for (int j = 0; j < 6; j++) {
 				StackPane stackPane = new StackPane();
-				stackPane.setPrefWidth(150);
+				stackPane.setPrefWidth(160);
 				stackPane.setPrefHeight(15);
 				Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
 				text.setStyle(Style.getTextStyle());
@@ -380,131 +391,123 @@ public class Doctor {
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
 
-		// Sort function
-		// Create button objects
-		Button sortByDefaultButton = new Button("Sort by default");
-		Button sortByIdButton = new Button("Sort by ID");
-		Button sortByNameButton = new Button("Sort by name");
-		// Button Style
-		sortByDefaultButton.setStyle(Style.getIdleButtonStyle());
-		sortByDefaultButton.setOnMouseEntered(e -> sortByDefaultButton.setStyle(Style.getHoveredButtonStyle()));
-		sortByDefaultButton.setOnMouseExited(e -> sortByDefaultButton.setStyle(Style.getIdleButtonStyle()));
+		// Create combo box objects for sort function
+		String[] sortArray = { "Sort By Default", "Sort by ID", "Sort by Name" };
+		ComboBox<String> sortComboBox = new ComboBox<>();
+		sortComboBox.setStyle(Style.getComboBox2Style());
+		sortComboBox.getItems().addAll(sortArray);
+		sortComboBox.getSelectionModel().selectFirst();
+		sortComboBox.setPrefWidth(220);
 
-		sortByIdButton.setStyle(Style.getIdleButtonStyle());
-		sortByIdButton.setOnMouseEntered(e -> sortByIdButton.setStyle(Style.getHoveredButtonStyle()));
-		sortByIdButton.setOnMouseExited(e -> sortByIdButton.setStyle(Style.getIdleButtonStyle()));
+		// Create HBox object for combo box
+		HBox HSort = new HBox(15);
+		HSort.getChildren().add(sortComboBox);
+		HSort.setAlignment(Pos.CENTER);
 
-		sortByNameButton.setStyle(Style.getIdleButtonStyle());
-		sortByNameButton.setOnMouseEntered(e -> sortByNameButton.setStyle(Style.getHoveredButtonStyle()));
-		sortByNameButton.setOnMouseExited(e -> sortByNameButton.setStyle(Style.getIdleButtonStyle()));
+		// Sort Function
+		sortComboBox.setOnAction(e -> {
+			// Sort by default function
+			if (sortArray[0].equals(sortComboBox.getValue())) {
+				vBox.getChildren().clear();
+				vBox.getChildren().addAll(columnLabelHBox);
 
-		// Button Size
-		sortByDefaultButton.setPrefSize(210, 70);
-		sortByIdButton.setPrefSize(210, 70);
-		sortByNameButton.setPrefSize(210, 70);
+				for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
+					HBox hBox = new HBox(10);
 
-		// Create HBox object for sort buttons
-		HBox HBtn2 = new HBox(15);
-		HBtn2.getChildren().addAll(sortByDefaultButton, sortByIdButton, sortByNameButton);
-		HBtn2.setAlignment(Pos.CENTER);
+					for (int j = 0; j < 6; j++) {
+						StackPane stackPane = new StackPane();
+						stackPane.setPrefWidth(150);
+						stackPane.setPrefHeight(15);
+						Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+						text.setStyle(Style.getTextStyle());
+						stackPane.getChildren().add(text);
+						hBox.getChildren().add(stackPane);
+					}
 
-		// Create VBox object for sort buttons and back button
-		VBox vBox2 = new VBox();
-		vBox2.getChildren().addAll(HBtn2, HBtn);
-		vBox2.setAlignment(Pos.CENTER);
-
-		// Create a HBox object to limit the height of the displayed information
-		HBox heightLimit = new HBox();
-		heightLimit.setPrefHeight(100);
-
-		// Sort by default function
-		sortByDefaultButton.setOnAction(e -> {
-			vBox.getChildren().clear();
-			vBox.getChildren().addAll(columnLabelHBox, line);
-
-			for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
-				HBox hBox = new HBox(10);
-
-				for (int j = 0; j < 6; j++) {
-					StackPane stackPane = new StackPane();
-					stackPane.setPrefWidth(150);
-					stackPane.setPrefHeight(15);
-					Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
-					text.setStyle(Style.getTextStyle());
-					stackPane.getChildren().add(text);
-					hBox.getChildren().add(stackPane);
+					hBox.setAlignment(Pos.CENTER);
+					vBox.getChildren().add(hBox);
 				}
+			} // Sort by id function
+			else if (sortArray[1].equals(sortComboBox.getValue())) {
+				// Make a copy of ArrayList
+				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
+				copyDoctors.sort((o1, o2) -> o1.id.compareTo(o2.id));
 
-				hBox.setAlignment(Pos.CENTER);
-				vBox.getChildren().add(hBox);
+				vBox.getChildren().clear();
+				vBox.getChildren().addAll(columnLabelHBox);
+
+				for (int i = 0; i < copyDoctors.size(); i++) {
+					HBox hBox = new HBox(10);
+
+					for (int j = 0; j < 6; j++) {
+						StackPane stackPane = new StackPane();
+						stackPane.setPrefWidth(150);
+						stackPane.setPrefHeight(15);
+						Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
+						text.setStyle(Style.getTextStyle());
+						stackPane.getChildren().add(text);
+						hBox.getChildren().add(stackPane);
+					}
+
+					hBox.setAlignment(Pos.CENTER);
+					vBox.getChildren().add(hBox);
+				}
 			}
+			// Sort by name function
+			else {
+				// Make a copy of ArrayList
+				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
+				copyDoctors.sort((o1, o2) -> o1.name.compareTo(o2.name));
 
-		});
+				vBox.getChildren().clear();
+				vBox.getChildren().addAll(columnLabelHBox);
 
-		// Sort by id function
-		sortByIdButton.setOnAction(e -> {
+				for (int i = 0; i < copyDoctors.size(); i++) {
+					HBox hBox = new HBox(10);
 
-			// Make a copy of ArrayList
-			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
-			copyDoctors.sort((o1, o2) -> o1.id.compareTo(o2.id));
+					for (int j = 0; j < 6; j++) {
+						StackPane stackPane = new StackPane();
+						stackPane.setPrefWidth(150);
+						stackPane.setPrefHeight(15);
+						Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
+						text.setStyle(Style.getTextStyle());
+						stackPane.getChildren().add(text);
+						hBox.getChildren().add(stackPane);
+					}
 
-			vBox.getChildren().clear();
-			vBox.getChildren().addAll(columnLabelHBox, line);
-
-			for (int i = 0; i < copyDoctors.size(); i++) {
-				HBox hBox = new HBox(10);
-
-				for (int j = 0; j < 6; j++) {
-					StackPane stackPane = new StackPane();
-					stackPane.setPrefWidth(150);
-					stackPane.setPrefHeight(15);
-					Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
-					text.setStyle(Style.getTextStyle());
-					stackPane.getChildren().add(text);
-					hBox.getChildren().add(stackPane);
+					hBox.setAlignment(Pos.CENTER);
+					vBox.getChildren().add(hBox);
 				}
-
-				hBox.setAlignment(Pos.CENTER);
-				vBox.getChildren().add(hBox);
-			}
-		});
-
-		// Sort by name function
-		sortByNameButton.setOnAction(e -> {
-
-			// Make a copy of ArrayList
-			ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
-			copyDoctors.sort((o1, o2) -> o1.name.compareTo(o2.name));
-
-			vBox.getChildren().clear();
-			vBox.getChildren().addAll(columnLabelHBox, line);
-
-			for (int i = 0; i < copyDoctors.size(); i++) {
-				HBox hBox = new HBox(10);
-
-				for (int j = 0; j < 6; j++) {
-					StackPane stackPane = new StackPane();
-					stackPane.setPrefWidth(150);
-					stackPane.setPrefHeight(15);
-					Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
-					text.setStyle(Style.getTextStyle());
-					stackPane.getChildren().add(text);
-					hBox.getChildren().add(stackPane);
-				}
-
-				hBox.setAlignment(Pos.CENTER);
-				vBox.getChildren().add(hBox);
 			}
 		});
 
 		// Arrange panes and objects
-		BorderPane borderPane = new BorderPane();
 		vBox.setAlignment(Pos.CENTER);
-		borderPane.setCenter(vBox);
-		borderPane.setBottom(vBox2);
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.setContent(vBox);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setStyle("-fx-background-color: transparent; -fx-background-radius: 20px");
+
+		// Create objects to limit the height and width of the displayed information
+		Pane heightLimit = new Pane();
+		heightLimit.setPrefSize(1344, 230);
+		heightLimit.getChildren().add(HSort);
+		HSort.setLayoutX(940);
+		HSort.setLayoutY(180);
+		VBox rightLimit = new VBox();
+		rightLimit.setPrefWidth(180);
+		VBox leftLimit = new VBox();
+		leftLimit.setPrefWidth(180);
+
+		BorderPane borderPane = new BorderPane();
+		borderPane.setCenter(scrollPane);
+		borderPane.setBottom(HBtn);
 		borderPane.setTop(heightLimit);
+		borderPane.setRight(rightLimit);
+		borderPane.setLeft(leftLimit);
 		BorderPane.setAlignment(vBox, Pos.CENTER);
-		BorderPane.setAlignment(vBox2, Pos.CENTER);
+		BorderPane.setAlignment(HBtn, Pos.CENTER);
 		BorderPane.setAlignment(heightLimit, Pos.TOP_CENTER);
 
 		// Set Background image
@@ -515,6 +518,7 @@ public class Doctor {
 
 		// Create scene object
 		Scene scene = new Scene(borderPane, 1344, 756);
+
 		return scene;
 	}
 
@@ -533,7 +537,7 @@ public class Doctor {
 		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
 
 		// Create label object
-		Label label = new Label("Enter doctor's ID:      ");
+		Label label = new Label("Enter doctor's ID:       ");
 		label.setStyle(Style.getTextStyle());
 
 		// Create combo box object
@@ -542,7 +546,7 @@ public class Doctor {
 			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).id);
 		}
 		doctorIdComboBox.getSelectionModel().select("Select ID --");
-		doctorIdComboBox.setStyle(Style.getTextStyle());
+		doctorIdComboBox.setStyle(Style.getComboBoxStyle());
 
 		// Create HBox object
 		HBox hBox = new HBox();
@@ -575,19 +579,21 @@ public class Doctor {
 			}
 
 			// Create VBox object
-			VBox infoVBox = new VBox(40);
+			VBox infoVBox = new VBox(20);
 			infoVBox.setAlignment(Pos.CENTER);
 
 			// Create HBox object for column label
 			String[] columnLabel = { "ID", "Name", "Specialist", "Work Time", "Qualification", "Room No." };
 			HBox columnLabelHBox = new HBox(10);
 			columnLabelHBox.setAlignment(Pos.CENTER);
+			columnLabelHBox.setStyle(Style.getHEADERStyle());
+			columnLabelHBox.setPrefSize(800, 50);
+			
 			for (int i = 0; i < 6; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(150);
-				stackPane.setPrefHeight(15);
 				Text text = new Text(columnLabel[i]);
-				text.setFont(Font.font("Courier", FontWeight.BOLD, 17));
+				text.setFont(Font.font("Courier", FontWeight.BOLD, 20));
 				stackPane.getChildren().add(text);
 				columnLabelHBox.getChildren().add(stackPane);
 			}
@@ -601,12 +607,12 @@ public class Doctor {
 					// Create HBox object for doctor's information
 					HBox infoHBox = new HBox(10);
 					infoHBox.setAlignment(Pos.CENTER);
+					infoHBox.setPadding(new Insets(0, 0, 20, 0));
 
 					// Get doctor's information
 					for (int j = 0; j < 6; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
-						stackPane.setPrefHeight(15);
 						Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
@@ -625,6 +631,19 @@ public class Doctor {
 							HospitalManagement.doctors.remove(index);
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
+							
+							// Remove item from database
+							if(HospitalManagement.connect && HospitalManagement.storeData) {
+								try {
+									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+									connection.createStatement().executeUpdate(
+											"DELETE FROM Doctor WHERE id = "+doctorIdComboBox.getValue());
+								} catch (SQLException e1) {
+									// Exception Catch
+									e1.printStackTrace();
+								}
+							}
+							
 
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
@@ -640,12 +659,21 @@ public class Doctor {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
+		
+		// Create VBox to limit the position of information
+		VBox leftLimit = new VBox();
+		leftLimit.setPrefWidth(210);
+		VBox rightLimit = new VBox();
+		rightLimit.setPrefWidth(210);
 
 		// Arrange panes and objects
 		hBox.getChildren().addAll(label, doctorIdComboBox);
+		hBox.setPadding(new Insets(0, 0, 20, 0));
 		vBox.getChildren().add(hBox);
 		borderPane.setCenter(vBox);
 		borderPane.setTop(BtnHbox);
+		borderPane.setLeft(leftLimit);
+		borderPane.setRight(rightLimit);
 		BorderPane.setAlignment(BtnHbox, Pos.TOP_LEFT);
 
 		// Set Background image
@@ -664,30 +692,39 @@ public class Doctor {
 
 		// Initialization of data fields
 		String idInput = inputArray[0];
-		String nameInput = inputArray[1];
-		String qualificationInput = inputArray[2];
 		String roomInput = inputArray[3];
 
 		// Check empty input
 		for (int i = 0; i < inputArray.length; i++) {
 			if (inputArray[i].isEmpty()) {
-				this.errorMsg = "Input cannot be empty.";
+				errorMsg = "Input cannot be empty.";
 				return false;
 			}
 		}
-
+		// Check if ID overflow
+		if (idInput.length() > 4) {
+			textFieldArray[0].clear();
+			errorMsg = "ID must be a non-negative number less than 10000.";
+			return false;
+		}
+		// Check if Room Number overflow
+		if (roomInput.length() > 4) {
+			textFieldArray[3].clear();
+			errorMsg = "Room number must be a non-negative number less than 10000.";
+			return false;
+		}
 		// Check if ID consists of positive numbers only or not
 		try {
 			Integer.parseInt(idInput);
 			if (Integer.parseInt(idInput) <= 0) {
 				textFieldArray[3].clear();
-				this.errorMsg = "ID must be a positive number without any spacing.";
+				errorMsg = "ID must be a non-negative number without any spacing.";
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textFieldArray[0].clear();
-			this.errorMsg = "ID must be a positive number without any spacing.";
+			errorMsg = "ID must be a non-negative number without any spacing.";
 			return false;
 		}
 
@@ -696,13 +733,13 @@ public class Doctor {
 			Integer.parseInt(roomInput);
 			if (Integer.parseInt(roomInput) <= 0) {
 				textFieldArray[3].clear();
-				this.errorMsg = "Room number must be a positive number without any spacing.";
+				errorMsg = "Room number must be a non-negative number without any spacing.";
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textFieldArray[3].clear();
-			this.errorMsg = "Room number must be a positive number without any spacing.";
+			errorMsg = "Room number must be a non-negative number without any spacing.";
 			return false;
 		}
 
@@ -710,12 +747,12 @@ public class Doctor {
 		for (int i = 0; i < arrayList.size(); i++) {
 			if (arrayList.get(i).id.equals(String.format("%03d", Integer.parseInt(idInput)))) {
 				textFieldArray[0].clear();
-				this.errorMsg = "ID already exists in record.";
+				errorMsg = "ID already exists in record.";
 				return false;
 			}
 			if (Integer.toString(arrayList.get(i).room).equals(inputArray[3])) {
 				textFieldArray[3].clear();
-				this.errorMsg = "This room is occupied.";
+				errorMsg = "This room is occupied.";
 				return false;
 			}
 		}
