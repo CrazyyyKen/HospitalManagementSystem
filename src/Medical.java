@@ -3,9 +3,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -55,7 +53,7 @@ public class Medical {
 		this.unit = unit;
 	}
 
-	// Medical main page
+	/* ============================ MEDICAL MAIN PAGE ============================ */
 	public static Scene medicalPage(Stage primaryStage) {
 
 		// Add New Medical Button
@@ -147,8 +145,9 @@ public class Medical {
 		Scene scene = new Scene(pane, 1344, 756);
 		return scene;
 	}
-
-	// Prompts user to enter information of Medical
+	
+	/* ============================ ADD MEDICAL ============================ */
+	// Prompts user to enter new information of medical
 	public Scene newMedical(Stage primaryStage) {
 
 		// Create button object
@@ -198,10 +197,6 @@ public class Medical {
 		datePicker.setValue(LocalDate.now());
 		datePicker.setShowWeekNumbers(true);	// show week numbers
 		
-		// To get the date picker value
-		// LocalDate date = datePicker.getValue();
-		// TO DO: FOR OUTPUT
-		
 		// Create button object
 		Button addButton = new Button("Add");
 		addButton.setLayoutX(620);
@@ -226,6 +221,7 @@ public class Medical {
 
 			// Validate user input
 			if (medicalValidation(textFieldArray, inputArray, HospitalManagement.medicals)) {
+				
 				// Assign value to data field
 				name = nameInput;
 				manufacturer = manufacturerInput;
@@ -245,14 +241,12 @@ public class Medical {
 								"insert into Medical values('" + name + "', '"+ manufacturer + "', '"+ expiryDate + "', "+ cost + ", "+  this.unit + ")");
 						connection.close();
 					} catch (SQLException e1) {
-						// Exception Catch
 						e1.printStackTrace();
 					}
 				}
-
-				// Check if user would like to return to previous section or return to main menu
+				
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
-
+				// Check if user would like to return to previous section or return to main menu
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 						JOptionPane.YES_NO_OPTION);
 
@@ -262,6 +256,7 @@ public class Medical {
 					primaryStage.setScene(medicalPage(primaryStage));
 				}
 			} else {
+				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		});
@@ -303,7 +298,8 @@ public class Medical {
 	}
 	
 	
-	// Shows the information of Medical
+	/* ========================== DISPLAY MEDICAL INFO ========================== */
+	// Show medical's information page
 	public String[] showMedicalInfo() {
 		String[] output = { name, manufacturer, expiryDate, cost + "", unit + "" };
 		return output;
@@ -314,6 +310,7 @@ public class Medical {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column label
 		String[] columnLabel = { "Name", "Manufacturer", "Expiry Date", "Cost", "Unit" };
@@ -359,14 +356,14 @@ public class Medical {
 		backButton.setStyle(Style.getIconButtonStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
-		// Create event handling for button
-		// Call MedicalPage
+		// Create event handling for button to return to medicalPage
 		backButton.setOnAction(e -> primaryStage.setScene(medicalPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
 
+		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
 		String[] sortArray = { "Sort By Default", "Sort by Name", "Sort by Unit" };
 		ComboBox<String> sortComboBox = new ComboBox<>();
@@ -457,8 +454,8 @@ public class Medical {
 			}
 		});
 
-		// Arrange panes and objects
-		vBox.setAlignment(Pos.CENTER);
+		/* ============================ ARANGE PANE ============================ */
+		// Create ScrollPane to handle data overflow
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(vBox);
 		scrollPane.setFitToWidth(true);
@@ -499,7 +496,8 @@ public class Medical {
 	}
 	
 	
-	// Remove Medical page
+	/* ============================ REMOVE MEDICAL PAGE ============================ */
+	// Prompt the user to choose the medical the he would like to remove
 	public static Scene removeMedical(Stage primaryStage) {
 
 		// Back Button
@@ -536,7 +534,7 @@ public class Medical {
 		// Create border pane object
 		BorderPane borderPane = new BorderPane();
 
-		// Create button object
+		// Create remove button object
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("  Remove", removeIcon);
 		removeButton.setLayoutX(620);
@@ -605,6 +603,7 @@ public class Medical {
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							// Remove item from array list
 							HospitalManagement.medicals.remove(index);
 							
 							// Remove item from database
@@ -622,7 +621,7 @@ public class Medical {
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
 							
-
+							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
 
@@ -666,7 +665,7 @@ public class Medical {
 	}
 	
 
-	// Input validation method
+	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean medicalValidation(TextField[] textField, String[] inputArray, ArrayList<Medical> arrayList) {
 
 		// Check empty input

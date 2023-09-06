@@ -55,7 +55,7 @@ public class Doctor {
 		this.room = room;
 	}
 
-	// Doctor main page
+	/* ============================ DOCTOR MAIN PAGE ============================ */
 	public static Scene doctorPage(Stage primaryStage) {
 
 		// Add New Doctor Button
@@ -95,15 +95,6 @@ public class Doctor {
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
-		// Arrange panes and objects
-		VBox vBox = new VBox(30);
-		vBox.getChildren().addAll(addButton, displayButton, removeButton);
-		vBox.setAlignment(Pos.CENTER);
-		vBox.setLayoutX(728);
-		vBox.setLayoutY(310);
-		Pane pane = new Pane();
-		pane.getChildren().addAll(vBox, backButton);
-
 		// Create event handling for buttons
 
 		// Call newDoctor method
@@ -137,6 +128,15 @@ public class Doctor {
 			primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 		});
 
+		// Arrange panes and objects
+		VBox vBox = new VBox(30);
+		vBox.getChildren().addAll(addButton, displayButton, removeButton);
+		vBox.setAlignment(Pos.CENTER);
+		vBox.setLayoutX(728);
+		vBox.setLayoutY(310);
+		Pane pane = new Pane();
+		pane.getChildren().addAll(vBox, backButton);
+
 		// Set Background image
 		pane.setBackground(
 				new Background(new BackgroundImage(new Image("/resources/doctors.png"), BackgroundRepeat.REPEAT,
@@ -148,10 +148,11 @@ public class Doctor {
 		return scene;
 	}
 
+	/* ============================ ADD DOCTOR ============================ */
 	// Prompts user to enter new information of doctor
 	public Scene newDoctor(Stage primaryStage) {
 
-		// Create button object
+		// Create BACK button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
 		Button backButton = new Button("Back", backIcon);
 		backButton.setStyle(Style.getIconStyle());
@@ -161,7 +162,7 @@ public class Doctor {
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(100);
 
-		// Create label objects
+		// Create Label objects
 		Label idLabel = new Label("Enter doctor's id : ");
 		idLabel.setStyle(Style.getTextStyle());
 		Label nameLabel = new Label("Enter doctor's name : ");
@@ -177,7 +178,7 @@ public class Doctor {
 		Label dashLabel = new Label("-");
 		dashLabel.setFont(Font.font("Courier", FontWeight.EXTRA_BOLD, 20));
 
-		// Create text field objects
+		// Create text field objects for ID, Name, Qualification and Room Number
 		TextField idTextField = new TextField();
 		idTextField.setStyle(Style.getTextfieldStyle());
 		idTextField.setPromptText("123");
@@ -191,7 +192,7 @@ public class Doctor {
 		roomTextField.setStyle(Style.getTextfieldStyle());
 		roomTextField.setPromptText("001");
 
-		// Create spinner objects
+		// Create spinner objects for WorkTime
 		Spinner<Integer> startTime = new Spinner<>(1, 12, 8);
 		startTime.setEditable(true);
 		startTime.setStyle(Style.getTextStyle());
@@ -201,20 +202,20 @@ public class Doctor {
 		endTime.setStyle(Style.getTextStyle());
 		endTime.getEditor().setPrefWidth(100);
 
-		// Create combo box objects
+		// Create combo box objects for Specialist
 		String[] specialistArray = { "Physician", "Surgeon", "Pathologist", "Pediatrician", "Dermatologist" };
 		ComboBox<String> specialistComboBox = new ComboBox<>();
 		specialistComboBox.setStyle(Style.getTextStyle());
 		specialistComboBox.getItems().addAll(specialistArray);
 		specialistComboBox.getSelectionModel().selectFirst();
 		specialistComboBox.setPrefWidth(350);
-
+		// Combo box for workTime (AM & PM)
 		ComboBox<String> workTimeComboBox = new ComboBox<>();
 		workTimeComboBox.setStyle(Style.getTextStyle());
 		workTimeComboBox.getItems().addAll("AM", "PM");
 		workTimeComboBox.getSelectionModel().selectFirst();
 
-		// Create button object
+		// Create Add button object
 		Button addButton = new Button("Add");
 		addButton.setLayoutX(620);
 		addButton.setLayoutY(640);
@@ -223,7 +224,7 @@ public class Doctor {
 		addButton.setOnMouseEntered(e -> addButton.setStyle(Style.getHoveredButtonStyle()));
 		addButton.setOnMouseExited(e -> addButton.setStyle(Style.getIdleButtonStyle()));
 
-		// Create event handling for button
+		// Create event handling for Add button
 		addButton.setOnAction(e -> {
 
 			// Initialization of data fields
@@ -254,13 +255,14 @@ public class Doctor {
 
 				// Add doctor object to ArrayList
 				HospitalManagement.doctors.add(this);
-				
+
 				// Add doctor to Database
-				if(HospitalManagement.connect && HospitalManagement.storeData) {
+				if (HospitalManagement.connect && HospitalManagement.storeData) {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate(
-								"insert into Doctor values('" + id + "', '"+ name + "', '"+ specialist + "', '"+ workTime + "', '"+ qualification + "', "+ room + ")");
+						connection.createStatement()
+								.executeUpdate("insert into Doctor values('" + id + "', '" + name + "', '" + specialist
+										+ "', '" + workTime + "', '" + qualification + "', " + room + ")");
 						connection.close();
 					} catch (SQLException e1) {
 						// Exception Catch
@@ -269,7 +271,8 @@ public class Doctor {
 				}
 
 				// Check if user would like to return to previous section or return to main menu
-				JOptionPane.showMessageDialog(null, "Successfully added!", "Success Message", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Success Message",
+						JOptionPane.INFORMATION_MESSAGE);
 
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 						JOptionPane.YES_NO_OPTION);
@@ -281,6 +284,7 @@ public class Doctor {
 				}
 
 			} else {
+				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 
@@ -333,11 +337,13 @@ public class Doctor {
 		return output;
 	}
 
+	/* ========================== DISPLAY DOCTOR INFO ========================== */
 	// Show doctor's information page
 	public static Scene showDoctorPage(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column label
 		String[] columnLabel = { "ID", "Name", "Specialist", "Work Time", "Qualification", "Room No." };
@@ -345,6 +351,7 @@ public class Doctor {
 		columnLabelHBox.setStyle(Style.getHEADERStyle());
 		columnLabelHBox.setPrefHeight(50);
 
+		// Insert columnLabel into HBox
 		for (int i = 0; i < 6; i++) {
 			StackPane stackPane = new StackPane();
 			stackPane.setPrefWidth(160);
@@ -377,20 +384,21 @@ public class Doctor {
 			vBox.getChildren().add(hBox);
 		}
 
-		// Create button object
+		// Create Back button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn.png"));
-		Button backButton = new Button("Back", backIcon);
+		Button backButton = new Button(" Back", backIcon);
 		backButton.setStyle(Style.getIconButtonStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
-		// Create event handling for button
-		// Call doctorPage
+
+		// Create event handling for Back button to return to doctor main page
 		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
 
+		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
 		String[] sortArray = { "Sort By Default", "Sort by ID", "Sort by Name" };
 		ComboBox<String> sortComboBox = new ComboBox<>();
@@ -406,6 +414,7 @@ public class Doctor {
 
 		// Sort Function
 		sortComboBox.setOnAction(e -> {
+
 			// Sort by default function
 			if (sortArray[0].equals(sortComboBox.getValue())) {
 				vBox.getChildren().clear();
@@ -427,7 +436,8 @@ public class Doctor {
 					hBox.setAlignment(Pos.CENTER);
 					vBox.getChildren().add(hBox);
 				}
-			} // Sort by id function
+			}
+			// Sort by id function
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
 				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
@@ -481,8 +491,8 @@ public class Doctor {
 			}
 		});
 
-		// Arrange panes and objects
-		vBox.setAlignment(Pos.CENTER);
+		/* ============================ ARANGE PANE ============================ */
+		// Create ScrollPane to handle data overflow
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(vBox);
 		scrollPane.setFitToWidth(true);
@@ -499,7 +509,8 @@ public class Doctor {
 		rightLimit.setPrefWidth(180);
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(180);
-
+		
+		// Create borderpane to hold all pane
 		BorderPane borderPane = new BorderPane();
 		borderPane.setCenter(scrollPane);
 		borderPane.setBottom(HBtn);
@@ -522,16 +533,19 @@ public class Doctor {
 		return scene;
 	}
 
-	// Remove doctor page
+	/* ============================ REMOVE DOCTOR PAGE ============================ */
+	// Prompt the user to choose the doctor the he would like to remove
 	public static Scene removeDoctor(Stage primaryStage) {
 
-		// Back Button
+		// Create Back Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
 		Button backButton = new Button("  Back", backIcon);
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
 		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+
+		// HBox to hold Back button
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
@@ -540,7 +554,7 @@ public class Doctor {
 		Label label = new Label("Enter doctor's ID:       ");
 		label.setStyle(Style.getTextStyle());
 
-		// Create combo box object
+		// Create combo box object for choosing id
 		ComboBox<String> doctorIdComboBox = new ComboBox<>();
 		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
 			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).id);
@@ -559,7 +573,7 @@ public class Doctor {
 		// Create border pane object
 		BorderPane borderPane = new BorderPane();
 
-		// Create button object
+		// Create Remove button object
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("  Remove", removeIcon);
 		removeButton.setLayoutX(620);
@@ -588,7 +602,7 @@ public class Doctor {
 			columnLabelHBox.setAlignment(Pos.CENTER);
 			columnLabelHBox.setStyle(Style.getHEADERStyle());
 			columnLabelHBox.setPrefSize(800, 50);
-			
+
 			for (int i = 0; i < 6; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(150);
@@ -628,23 +642,26 @@ public class Doctor {
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							// Remove item from array list
 							HospitalManagement.doctors.remove(index);
-							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
-									JOptionPane.INFORMATION_MESSAGE);
-							
+
+
 							// Remove item from database
-							if(HospitalManagement.connect && HospitalManagement.storeData) {
+							if (HospitalManagement.connect && HospitalManagement.storeData) {
 								try {
-									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+									Connection connection = DriverManager
+											.getConnection(HospitalManagement.getDatabasePath());
 									connection.createStatement().executeUpdate(
-											"DELETE FROM Doctor WHERE id = "+doctorIdComboBox.getValue());
+											"DELETE FROM Doctor WHERE id = " + doctorIdComboBox.getValue());
 								} catch (SQLException e1) {
 									// Exception Catch
 									e1.printStackTrace();
 								}
-							}
-							
+							}							
+							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
+									JOptionPane.INFORMATION_MESSAGE);
 
+							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
 
@@ -659,7 +676,7 @@ public class Doctor {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
-		
+
 		// Create VBox to limit the position of information
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(210);
@@ -687,7 +704,7 @@ public class Doctor {
 		return scene;
 	}
 
-	// Input validation method
+	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean doctorValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Doctor> arrayList) {
 
 		// Initialization of data fields
@@ -713,7 +730,7 @@ public class Doctor {
 			errorMsg = "Room number must be a non-negative number less than 10000.";
 			return false;
 		}
-		
+
 		// Check if ID consists of positive numbers only or not
 		try {
 			Integer.parseInt(idInput);

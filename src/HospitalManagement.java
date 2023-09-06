@@ -1,3 +1,5 @@
+
+// IMPORT libraries/files
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
@@ -30,16 +32,19 @@ import resources.Style;
 
 public class HospitalManagement extends Application {
 
-	// Get Current working directory
+	// Get Current working directory and set database path
 	private static String databasePath = "jdbc:ucanaccess://" + System.getProperty("user.dir").replace("\\", "/")
 			+ "/src/resources/HospitalDatabase.accdb";
-	public static boolean connect = false;
-	public static boolean fileExist = false;
-	public static boolean storeData = false;
 
+	// Getter of database path
 	public static String getDatabasePath() {
 		return databasePath;
 	}
+
+	// Status of JDBC connection
+	public static boolean connect = false;
+	public static boolean fileExist = false;
+	public static boolean storeData = false;
 
 	// Declaration of ArrayList
 	public static ArrayList<Doctor> doctors = new ArrayList<Doctor>();
@@ -49,7 +54,7 @@ public class HospitalManagement extends Application {
 	public static ArrayList<Lab> laboratories = new ArrayList<Lab>();
 	public static ArrayList<Facility> facilities = new ArrayList<Facility>();
 
-	// Stage for welcome page scene
+	/* ================ Stage for welcome page scene ================ */
 	public void start(Stage primaryStage) {
 		primaryStage.getIcons().add(new Image("/resources/logo.png"));
 		primaryStage.setTitle("Hospital Management System");
@@ -63,6 +68,7 @@ public class HospitalManagement extends Application {
 					"Thank you for using Hospital Management System!\n\n" + "Are you sure you want to exit?",
 					"Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			if (option == JOptionPane.YES_OPTION) {
+				// Exit program
 				System.exit(0);
 			} else {
 				// Prevent the window from closing
@@ -71,9 +77,11 @@ public class HospitalManagement extends Application {
 		});
 
 	}
-
+	
+	/* ============================ MAIN & DATABASE ============================ */
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
+		// HospitalDatabase.accbd File path
 		String filePath = System.getProperty("user.dir").replace("\\", "/") + "/src/resources/HospitalDatabase.accdb";
 
 		// Create a File object representing the database file
@@ -88,21 +96,21 @@ public class HospitalManagement extends Application {
 					"HospitalDatabase.accdb file cannot be found!"
 							+ "\n\n Rest assured that you can still use our service without storage.",
 					"Error", JOptionPane.WARNING_MESSAGE);
-			
+
 			// Check if the user want to create new file to store data
 			int createFile = JOptionPane.showConfirmDialog(null,
 					"Would you like to create a HospitalDatabase.accdb file to store data?", "File Creation",
 					JOptionPane.YES_NO_OPTION);
 			if (createFile == JOptionPane.YES_OPTION) {
-				
+
 				// Create a file to store data
 				String fileName = "HospitalDatabase.accdb";
 				String separator = System.getProperty("file.separator");
 				String fileDirectory = System.getProperty("user.dir") + separator + "src" + separator + "resources"
 						+ separator + fileName;
 				File file = new File(fileDirectory);
-				
-				// change file format & Create a new Access database
+
+				// Change file format & Create a new Access database
 				try {
 					Database db = new DatabaseBuilder(file).setFileFormat(Database.FileFormat.V2000).create();
 					db.close();
@@ -113,15 +121,15 @@ public class HospitalManagement extends Application {
 					JOptionPane.showMessageDialog(null, "Successfully created HospitalDatabase.accdb file!",
 							"File Created", JOptionPane.INFORMATION_MESSAGE);
 					fileExist = true;
-					storeData =  true;
+					storeData = true;
 				} else {
-					
-					// If fail to create file
+
+					// Inform user when fail to create file
 					JOptionPane.showMessageDialog(null, "Fail to create HospitalDatabase.accdb file!", "Error",
 							JOptionPane.INFORMATION_MESSAGE);
 					int option = JOptionPane.showConfirmDialog(null, "Would you like to continue using our service?",
 							"Error", JOptionPane.YES_NO_OPTION);
-					
+
 					// Exit program
 					if (option == JOptionPane.NO_OPTION) {
 						System.exit(0);
@@ -134,15 +142,15 @@ public class HospitalManagement extends Application {
 		if (fileExist) {
 			// Connect with .accdb file
 			Connection connection = DriverManager.getConnection(databasePath);
-			
-			if (connection != null) { 
+
+			if (connection != null) {
 				// Connected to Hospital Database
 				connect = true;
 				JOptionPane.showMessageDialog(null, "Successfully connected to Hospital Database!", "Success Message",
 						JOptionPane.INFORMATION_MESSAGE);
-				
-				// To confirm if the user want to store data to database
-				if(!storeData) {
+
+				// Confirm if the user want to store data to database
+				if (!storeData) {
 					int store = JOptionPane.showConfirmDialog(null,
 							"Would you like to store your data in the database? \n\n"
 									+ "*Note that you can continue using our service even without storage.",
@@ -152,9 +160,9 @@ public class HospitalManagement extends Application {
 					}
 				}
 
-
 			} else {
 				connect = false;
+				// Inform the user when fail to connect to .accdb file
 				JOptionPane.showMessageDialog(null,
 						"Fail to connect to Hospital Database! "
 								+ "\nRest assured that you can still use our service without storage.",
@@ -162,16 +170,17 @@ public class HospitalManagement extends Application {
 
 			}
 
+			// Connected and user want to store data into database
 			if (connect && storeData) {
 				// For creating a statement
 				Statement statement = connection.createStatement();
 
 				// Meta Data
-				DatabaseMetaData datasetMetaData = connection.getMetaData();
+				DatabaseMetaData metaData = connection.getMetaData();
 
 				/* ============================ DOCTOR ============================ */
 				// Check if the "Doctor" table exists
-				ResultSet docTableCheck = datasetMetaData.getTables(null, null, "Doctor", null);
+				ResultSet docTableCheck = metaData.getTables(null, null, "Doctor", null);
 
 				if (!docTableCheck.next()) {// The "Doctor" table doesn't exist
 					// Create Doctor Table
@@ -214,7 +223,7 @@ public class HospitalManagement extends Application {
 
 				/* ============================ PATIENT ============================ */
 				// Check if the "Patient" table exists
-				ResultSet patientTableCheck = datasetMetaData.getTables(null, null, "Patient", null);
+				ResultSet patientTableCheck = metaData.getTables(null, null, "Patient", null);
 
 				if (!patientTableCheck.next()) {// The "Patient" table doesn't exist
 					// Create Patient Table
@@ -256,7 +265,7 @@ public class HospitalManagement extends Application {
 
 				/* ============================ STAFF ============================ */
 				// Check if the "Staff" table exists
-				ResultSet staffTableCheck = datasetMetaData.getTables(null, null, "Staff", null);
+				ResultSet staffTableCheck = metaData.getTables(null, null, "Staff", null);
 
 				if (!staffTableCheck.next()) {// The "Staff" table doesn't exist
 					// Create Staff Table
@@ -297,7 +306,7 @@ public class HospitalManagement extends Application {
 
 				/* ============================ MEDICAL ============================ */
 				// Check if the "Medical" table exists
-				ResultSet medTableCheck = datasetMetaData.getTables(null, null, "Medical", null);
+				ResultSet medTableCheck = metaData.getTables(null, null, "Medical", null);
 
 				if (!medTableCheck.next()) {// The Medical table doesn't exist
 					// Create Medical Table
@@ -337,7 +346,7 @@ public class HospitalManagement extends Application {
 				}
 				/* ============================ LAB ============================ */
 				// Check if the Lab table exists
-				ResultSet labTableCheck = datasetMetaData.getTables(null, null, "Lab", null);
+				ResultSet labTableCheck = metaData.getTables(null, null, "Lab", null);
 
 				if (!labTableCheck.next()) {// The Lab table doesn't exist
 					// Create Lab Table
@@ -371,7 +380,7 @@ public class HospitalManagement extends Application {
 
 				/* ============================ FACILITY ============================ */
 				// Check if the Facility table exists
-				ResultSet facilityTableCheck = datasetMetaData.getTables(null, null, "Facility", null);
+				ResultSet facilityTableCheck = metaData.getTables(null, null, "Facility", null);
 
 				if (!facilityTableCheck.next()) {// The Facility table doesn't exist
 					// Create Facility Table
@@ -406,7 +415,8 @@ public class HospitalManagement extends Application {
 			}
 		}
 
-		// Initialize array list if the connection to database cannot be establish
+		// Initialize array list if the connection to database cannot be establish or
+		// the user don't want to store data
 		if (!connect || !storeData) {
 			// Initialization of first 5 doctors
 			doctors.add(new Doctor("687", "Dr. Goh Ken How", "Surgeon", "8-11AM", "MBBS, MD", 6));
@@ -456,7 +466,7 @@ public class HospitalManagement extends Application {
 
 	}
 
-	// Welcome page
+	/* ============================ WELCOME PAGE ============================ */
 	public static Scene welcomePage(Stage primaryStage) {
 
 		// Create local date time object
@@ -478,12 +488,11 @@ public class HospitalManagement extends Application {
 		startButton.setStyle(Style.getIdleButtonStyle());
 		startButton.setOnMouseEntered(e -> startButton.setStyle(Style.getHoveredButtonStyle()));
 		startButton.setOnMouseExited(e -> startButton.setStyle(Style.getIdleButtonStyle()));
-		// Button Position
 		startButton.setPrefSize(200, 70);
+		// Button Position
 		startButton.setLayoutX(570);
 		startButton.setLayoutY(550);
 
-		// Create event handling for startButton
 		// Call mainMenuPage method
 		startButton.setOnAction(e -> {
 			primaryStage.setScene(mainMenuPage(primaryStage));
@@ -505,7 +514,7 @@ public class HospitalManagement extends Application {
 		return scene;
 	}
 
-	// Main menu page
+	/* ============================ MAIN MENU PAGE ============================ */
 	public static Scene mainMenuPage(Stage primaryStage) {
 
 		// Doctor Button Object
@@ -529,7 +538,7 @@ public class HospitalManagement extends Application {
 		patientButton.setOnMouseExited(e -> patientButton.setStyle(Style.getIconButtonStyle()));
 		patientButton.setOnMouseClicked(e -> primaryStage.setScene(Patient.patientPage(primaryStage))); // Go to patient
 
-		// Staff Button
+		// Staff Button Object
 		ImageView staffIcon = new ImageView(new Image("/resources/staffIcon.png"));
 		Button staffButton = new Button("   Staff", staffIcon);
 		staffButton.setAlignment(Pos.CENTER_LEFT);
@@ -539,7 +548,7 @@ public class HospitalManagement extends Application {
 		staffButton.setOnMouseExited(e -> staffButton.setStyle(Style.getIconButtonStyle()));
 		staffButton.setOnMouseClicked(e -> primaryStage.setScene(Staff.staffPage(primaryStage))); // Go to Staff
 
-		// Medical Button
+		// Medical Button Object
 		ImageView medicalIcon = new ImageView(new Image("/resources/medIcon.png"));
 		Button medicalButton = new Button("   Medicals", medicalIcon);
 		medicalButton.setAlignment(Pos.CENTER_LEFT);
@@ -549,7 +558,7 @@ public class HospitalManagement extends Application {
 		medicalButton.setOnMouseExited(e -> medicalButton.setStyle(Style.getIconButtonStyle()));
 		medicalButton.setOnMouseClicked(e -> primaryStage.setScene(Medical.medicalPage(primaryStage))); // Go to Staff
 
-		// Lab Buttons
+		// Lab Buttons Object
 		ImageView labIcon = new ImageView(new Image("/resources/labIcon.png"));
 		Button labButton = new Button("   Laboratories", labIcon);
 		labButton.setAlignment(Pos.CENTER_LEFT);
@@ -559,7 +568,7 @@ public class HospitalManagement extends Application {
 		labButton.setOnMouseExited(e -> labButton.setStyle(Style.getIconButtonStyle()));
 		labButton.setOnMouseClicked(e -> primaryStage.setScene(Lab.labPage(primaryStage))); // Go to Staff
 
-		// Facilities Button
+		// Facilities Button Object
 		ImageView facilityIcon = new ImageView(new Image("/resources/facilityIcon.png"));
 		Button facilityButton = new Button("   Facilities", facilityIcon);
 		facilityButton.setAlignment(Pos.CENTER_LEFT);
@@ -570,7 +579,7 @@ public class HospitalManagement extends Application {
 		facilityButton.setOnMouseClicked(e -> primaryStage.setScene(Facility.facilityPage(primaryStage))); // Go to
 																											// Staff
 
-		// Exit Button
+		// Exit Button Object
 		ImageView exitIcon = new ImageView(new Image("/resources/exitBtn.png"));
 		Button exitButton = new Button("   Exit", exitIcon);
 		exitButton.setPrefSize(170, 50);
@@ -579,6 +588,7 @@ public class HospitalManagement extends Application {
 		exitButton.setStyle(Style.getIconButtonStyle());
 		exitButton.setOnMouseEntered(e -> exitButton.setStyle(Style.getHoveredIconButtonStyle()));
 		exitButton.setOnMouseExited(e -> exitButton.setStyle(Style.getIconButtonStyle()));
+		
 		// Exit Program
 		exitButton.setOnMouseClicked(e -> {
 			int option = JOptionPane.showConfirmDialog(null,

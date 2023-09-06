@@ -32,19 +32,20 @@ import javafx.stage.Stage;
 import resources.Style;
 
 public class Facility {
-	
+
 	private String facility;
 	private String errorMsg; // Only used for input validation
-	
+
 	// Default constructor
-	public Facility() {};
-	
+	public Facility() {
+	};
+
 	// Constructor with argument
 	public Facility(String facility) {
 		this.facility = facility;
 	}
-	
-	// Facility main page
+
+	// =========================== FACILITY MAIN PAGE ===========================
 	public static Scene facilityPage(Stage primaryStage) {
 
 		// Add New Facility Button
@@ -88,7 +89,7 @@ public class Facility {
 		VBox vBox = new VBox(30);
 		vBox.getChildren().addAll(addButton, displayButton, removeButton);
 		vBox.setAlignment(Pos.CENTER);
-		vBox.setLayoutX(730);
+		vBox.setLayoutX(727);
 		vBox.setLayoutY(310);
 		Pane pane = new Pane();
 		pane.getChildren().addAll(vBox, backButton);
@@ -136,8 +137,9 @@ public class Facility {
 		Scene scene = new Scene(pane, 1344, 756);
 		return scene;
 	}
-	
-	// Prompts user to enter information of Facility
+
+	// =========================== ADD Facility ===========================
+	// Prompts user to enter new information of Facility
 	public Scene newFacility(Stage primaryStage) {
 
 		// Create button object
@@ -172,41 +174,39 @@ public class Facility {
 		addButton.setOnAction(e -> {
 			// Initialization of data field
 			String facilityInput = nameTextField.getText();
-			
+
 			// Validate user input
-			if(facilityValidation(nameTextField, facilityInput, HospitalManagement.facilities)) {
+			if (facilityValidation(nameTextField, facilityInput, HospitalManagement.facilities)) {
 				// Assign value to facility object's data field
 				facility = facilityInput;
-			
+
 				// Add facility object to ArrayList
 				HospitalManagement.facilities.add(this);
-				
+
 				// Add Facility to Database
-				if(HospitalManagement.connect && HospitalManagement.storeData) {
+				if (HospitalManagement.connect && HospitalManagement.storeData) {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate(
-								"insert into Facility values('" + facility + "')");
+						connection.createStatement().executeUpdate("insert into Facility values('" + facility + "')");
 						connection.close();
 					} catch (SQLException e1) {
 						// Exception Catch
 						e1.printStackTrace();
 					}
 				}
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
 				
 				// Check if user would like to return to previous section or return to main menu
-				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
-	
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 						JOptionPane.YES_NO_OPTION);
-	
+
 				if (reply == JOptionPane.YES_OPTION) {
 					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 				} else {
 					primaryStage.setScene(facilityPage(primaryStage));
 				}
-			}
-			else {
+			} else {
+				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		});
@@ -223,7 +223,6 @@ public class Facility {
 		// Column 1
 		grid.add(nameTextField, 1, 0);
 
-
 		// Create pane object
 		Pane pane = new Pane();
 		pane.getChildren().addAll(grid, addButton, backButton);
@@ -239,21 +238,23 @@ public class Facility {
 		return scene;
 
 	}
-	
+
 	// Shows the information of Facility
 	public String[] showFacilityInfo() {
-		String[] output = { facility};
+		String[] output = { facility };
 		return output;
 	}
-	
-	// Show Facility's information page
+
+	/* ========================== DISPLAY DOCTOR INFO ========================== */
+	// Show facility's information page
 	public static Scene showFacilityPage(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column Facility
-		String[] columnFacility = { "Facility"};
+		String[] columnFacility = { "Facility" };
 		HBox columnFacilityHBox = new HBox(10);
 		columnFacilityHBox.setStyle(Style.getHEADERStyle());
 		columnFacilityHBox.setPrefHeight(50);
@@ -304,8 +305,9 @@ public class Facility {
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
 
+		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
-		String[] sortArray = { "Sort By Default", "Sort by Facility"};
+		String[] sortArray = { "Sort By Default", "Sort by Facility" };
 		ComboBox<String> sortComboBox = new ComboBox<>();
 		sortComboBox.setStyle(Style.getComboBox2Style());
 		sortComboBox.getItems().addAll(sortArray);
@@ -368,8 +370,8 @@ public class Facility {
 			}
 		});
 
-		// Arrange panes and objects
-		vBox.setAlignment(Pos.CENTER);
+		/* ============================ ARANGE PANE ============================ */
+		// Create ScrollPane to handle data overflow
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(vBox);
 		scrollPane.setFitToWidth(true);
@@ -387,6 +389,7 @@ public class Facility {
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(260);
 
+		// Create borderpane to hold all pane
 		BorderPane borderPane = new BorderPane();
 		borderPane.setCenter(scrollPane);
 		borderPane.setBottom(HBtn);
@@ -408,9 +411,9 @@ public class Facility {
 
 		return scene;
 	}
-	
-	
-	// Remove Facility page
+
+	/* ============================ REMOVE FACILITY PAGE ============================ */
+	// Prompt the user to choose the facility the he would like to remove
 	public static Scene removeFacility(Stage primaryStage) {
 
 		// Back Button
@@ -476,7 +479,7 @@ public class Facility {
 			columnLabelHBox.setAlignment(Pos.CENTER);
 			columnLabelHBox.setStyle(Style.getHEADERStyle());
 			columnLabelHBox.setPrefSize(800, 50);
-			
+
 			for (int i = 0; i < 1; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(400);
@@ -511,29 +514,31 @@ public class Facility {
 
 					// Check if user would like to remove the item
 					removeButton.setOnAction(e2 -> {
-						int reply = JOptionPane.showConfirmDialog(null,
-								"Are you sure you want to remove " + HospitalManagement.facilities.get(index).facility + "?",
+						int reply = JOptionPane.showConfirmDialog(
+								null, "Are you sure you want to remove "
+										+ HospitalManagement.facilities.get(index).facility + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							// Remove item from array list
 							HospitalManagement.facilities.remove(index);
-							
+
 							// Remove item from database
-							if(HospitalManagement.connect && HospitalManagement.storeData) {
+							if (HospitalManagement.connect && HospitalManagement.storeData) {
 								try {
-									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-									connection.createStatement().executeUpdate(
-											"DELETE FROM Facility WHERE Facility = '"+FacilityIdComboBox.getValue()+ "'");
+									Connection connection = DriverManager
+											.getConnection(HospitalManagement.getDatabasePath());
+									connection.createStatement().executeUpdate("DELETE FROM Facility WHERE Facility = '"
+											+ FacilityIdComboBox.getValue() + "'");
 								} catch (SQLException e1) {
-									// Exception Catch
 									e1.printStackTrace();
 								}
 							}
-							
+
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
 							
-
+							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
 
@@ -548,7 +553,7 @@ public class Facility {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
-		
+
 		// Create VBox to limit the position of information
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(210);
@@ -575,29 +580,27 @@ public class Facility {
 		Scene scene = new Scene(borderPane, 1344, 756);
 		return scene;
 	}
-	
-	
-	// Input validation method
+
+	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean facilityValidation(TextField textField, String input, ArrayList<Facility> arrayList) {
 		// Check for empty input
-		if(input.isEmpty()) {
+		if (input.isEmpty()) {
 			errorMsg = "Input cannot be empty";
 			return false;
 		}
-		
+
 		// Check if facility name is duplicated
-		for(int i = 0; i < arrayList.size(); ++i) {
-			if(arrayList.get(i).facility.equals(input)) {
+		for (int i = 0; i < arrayList.size(); ++i) {
+			if (arrayList.get(i).facility.equals(input)) {
 				textField.clear();
 				errorMsg = "Facility already exists in record";
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
-	
+
 	// Getter
 	public String getErrorMsg() {
 		return errorMsg;

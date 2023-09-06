@@ -1,6 +1,7 @@
 package resources;
 
 public class Style {
+	// Button Style
 	private static final String IDLE_BUTTON_STYLE = "-fx-border-color: #ffffff; " + "-fx-background-color: #564A50; "
 			+ "-fx-text-fill: #ffffff; " + "-fx-font-size: 20px; " + "-fx-font-family: 'Courier'; "
 			+ "-fx-font-weight: bold;" + "-fx-border-width: 2px; " + "-fx-padding: 10 30 10 30; "
@@ -18,6 +19,8 @@ public class Style {
 			+ "-fx-background-color: #ffffff; " + "-fx-text-fill: #564A50; " + "-fx-font-size: 20px; "
 			+ "-fx-font-family: 'Courier'; " + "-fx-font-weight: bold;" + "-fx-border-width: 2px; "
 			+ "-fx-padding: 10 30 10 20; " + "-fx-border-radius: 40px;" + "-fx-background-radius: 40px;";
+	
+	// Icon style
 	private static final String ICON_STYLE = "-fx-border-color: #ffffff; " + "-fx-background-color: transparent; "
 			+ "-fx-text-fill: #564A50; " + "-fx-font-size: 20px; " + "-fx-font-family: 'Courier'; "
 			+ "-fx-font-weight: bold;" + "-fx-padding: 10 10 10 10; " + "-fx-border-width: 0px; ";
@@ -40,7 +43,10 @@ public class Style {
 	// Constant Text Style
 	private static final String TEXT_STYLE = "-fx-text-fill: #564A50; " + "-fx-font-size: 16px; "
 			+ "-fx-font-family: 'Courier'; ";
+	
+	// Constant Header Style
 	private static final String HEADER_STYLE = "-fx-background-color: #98C3C3; -fx-border-width: 1px; -fx-border-color: #ffffff;";
+	
 	// Constant Text Field Style
 	private static final String TEXTFIELD_STYLE = "-fx-text-fill: #000000; " + "-fx-font-size: 16px; "
 			+ "-fx-font-family: 'Courier'; ";

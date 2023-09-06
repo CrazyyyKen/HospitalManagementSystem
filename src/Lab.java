@@ -46,7 +46,7 @@ public class Lab {
 		this.cost = cost;
 	}
 
-	// Lab main page
+	/* ============================ LAB MAIN PAGE ============================ */
 	public static Scene labPage(Stage primaryStage) {
 
 		// Add New Lab Button
@@ -90,7 +90,7 @@ public class Lab {
 		VBox vBox = new VBox(30);
 		vBox.getChildren().addAll(addButton, displayButton, removeButton);
 		vBox.setAlignment(Pos.CENTER);
-		vBox.setLayoutX(730);
+		vBox.setLayoutX(727);
 		vBox.setLayoutY(310);
 		Pane pane = new Pane();
 		pane.getChildren().addAll(vBox, backButton);
@@ -136,7 +136,8 @@ public class Lab {
 		return scene;
 	}
 
-	// Prompts user to enter information of Lab
+	/* ============================ ADD LAB ============================ */
+	// Prompts user to enter new information of LAB
 	public Scene newLab(Stage primaryStage) {
 
 		// Create button object
@@ -199,10 +200,9 @@ public class Lab {
 						e1.printStackTrace();
 					}
 				}
+				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
 				
 				// Check if user would like to return to previous section or return to main menu
-				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
-	
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 						JOptionPane.YES_NO_OPTION);
 	
@@ -213,6 +213,7 @@ public class Lab {
 				}
 			}
 			else {
+				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		});
@@ -255,11 +256,13 @@ public class Lab {
 		return output;
 	}
 	
-	// Show Lab's information page
+	/* ========================== DISPLAY LAB INFO ========================== */
+	// Show lab's information page
 	public static Scene showLabPage(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column label
 		String[] columnLabel = { "Lab", "Cost"};
@@ -312,7 +315,8 @@ public class Lab {
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
-
+		
+		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
 		String[] sortArray = { "Sort By Default", "Sort by Name", "Sort by Cost" };
 		ComboBox<String> sortComboBox = new ComboBox<>();
@@ -403,8 +407,8 @@ public class Lab {
 			}
 		});
 
-		// Arrange panes and objects
-		vBox.setAlignment(Pos.CENTER);
+		/* ============================ ARANGE PANE ============================ */
+		// Create ScrollPane to handle data overflow
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(vBox);
 		scrollPane.setFitToWidth(true);
@@ -444,7 +448,8 @@ public class Lab {
 		return scene;
 	}
 	
-	// Remove Lab page
+	/* ============================ REMOVE LAB PAGE ============================ */
+	// Prompt the user to choose the LAB the he would like to remove
 	public static Scene removeLab(Stage primaryStage) {
 
 		// Back Button
@@ -550,6 +555,7 @@ public class Lab {
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							// Remove item from array list
 							HospitalManagement.laboratories.remove(index);
 							
 							// Remove item from database
@@ -567,7 +573,7 @@ public class Lab {
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
 							
-
+							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
 
@@ -611,7 +617,7 @@ public class Lab {
 	}
 	
 	
-	// Input validation method
+	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean labValidation(TextField nameTextField, TextField costTextField, String lab, String cost, ArrayList<Lab> arrayList) {
 		// Check for empty input
 		if(lab.isEmpty() || cost.isEmpty()) {

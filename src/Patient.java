@@ -2,7 +2,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,18 +33,21 @@ import javafx.stage.Stage;
 import resources.Style;
 
 public class Patient {
-	Scanner input = new Scanner(System.in);
+
+	// Data fields
 	private String id;
 	private String name;
 	private String disease;
 	private String sex;
 	private String admitStatus;
 	private int age;
-	private String errorMsg;
+	private String errorMsg; // Only used for input validation
 
+	// Default constructor
 	public Patient() {
 	}
 
+	// Constructor
 	public Patient(String id, String name, String disease, String sex, String admitStatus, int age) {
 		this.id = id;
 		this.name = name;
@@ -55,7 +57,7 @@ public class Patient {
 		this.age = age;
 	}
 
-	// Patient main page
+	/* ========================== PATIENT MAIN PAGE ========================== */
 	public static Scene patientPage(Stage primaryStage) {
 
 		// Add New Patient Button
@@ -95,15 +97,6 @@ public class Patient {
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
-		// Arrange panes and objects
-		VBox vBox = new VBox(30);
-		vBox.getChildren().addAll(addButton, displayButton, removeButton);
-		vBox.setAlignment(Pos.CENTER);
-		vBox.setLayoutX(668);
-		vBox.setLayoutY(310);
-		Pane pane = new Pane();
-		pane.getChildren().addAll(vBox, backButton);
-
 		// Create event handling for buttons
 
 		// Call newPatient method
@@ -137,6 +130,15 @@ public class Patient {
 			primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 		});
 
+		// Arrange panes and objects
+		VBox vBox = new VBox(30);
+		vBox.getChildren().addAll(addButton, displayButton, removeButton);
+		vBox.setAlignment(Pos.CENTER);
+		vBox.setLayoutX(668);
+		vBox.setLayoutY(310);
+		Pane pane = new Pane();
+		pane.getChildren().addAll(vBox, backButton);
+
 		// Set Background image
 		pane.setBackground(
 				new Background(new BackgroundImage(new Image("/resources/patient.png"), BackgroundRepeat.REPEAT,
@@ -148,10 +150,11 @@ public class Patient {
 		return scene;
 	}
 
+	/* ============================ ADD PATIENT ============================ */
 	// Prompts user to enter information of Patient
 	public Scene newPatient(Stage primaryStage) {
 
-		// Create button object
+		// Create BACK button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
 		Button backButton = new Button("  Back", backIcon);
 		backButton.setStyle(Style.getIconStyle());
@@ -175,7 +178,7 @@ public class Patient {
 		Label ageLabel = new Label("Enter Patient's Age : ");
 		ageLabel.setStyle(Style.getTextStyle());
 
-		// Create text field objects
+		// Create text field objects for ID, name, disease
 		TextField idTextField = new TextField();
 		idTextField.setStyle(Style.getTextfieldStyle());
 		idTextField.setPromptText("123");
@@ -186,14 +189,14 @@ public class Patient {
 		diseaseTextField.setStyle(Style.getTextfieldStyle());
 		diseaseTextField.setPromptText("Fever");
 
-		// Sex
+		// Create combo box for Sex
 		ComboBox<String> sexComboBox = new ComboBox<>();
 		sexComboBox.setStyle(Style.getTextStyle());
 		sexComboBox.getItems().addAll("Male", "Female");
 		sexComboBox.getSelectionModel().selectFirst();
 		sexComboBox.setPrefWidth(250);
 
-		// Create combo box objects
+		// Create combo box for admitStatus
 		String[] admitStatusArray = { "Admitted", "Outpatient", "Emergency Admission", "Scheduled Admission",
 				"Discharged", "Transferred" };
 		ComboBox<String> admitStatusComboBox = new ComboBox<>();
@@ -202,13 +205,13 @@ public class Patient {
 		admitStatusComboBox.getSelectionModel().selectFirst();
 		admitStatusComboBox.setPrefWidth(250);
 
-		// Create spinner objects
+		// Create spinner objects for age
 		Spinner<Integer> ageSpinner = new Spinner<>(0, 200, 20);
 		ageSpinner.setEditable(true);
 		ageSpinner.setStyle(Style.getTextStyle());
 		ageSpinner.getEditor().setPrefWidth(250);
 
-		// Create button object
+		// Create Add button object
 		Button addButton = new Button("Add");
 		addButton.setStyle(Style.getIdleButtonStyle());
 		addButton.setLayoutX(620);
@@ -256,7 +259,6 @@ public class Patient {
 								+ "', '" + disease + "', '" + sex + "', '" + admitStatus + "', " + age + ")");
 						connection.close();
 					} catch (SQLException e1) {
-						// Exception Catch
 						e1.printStackTrace();
 					}
 
@@ -275,6 +277,7 @@ public class Patient {
 				}
 
 			} else {
+				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		});
@@ -317,6 +320,7 @@ public class Patient {
 
 	}
 
+	/* ========================== DISPLAY PATIENT INFO ========================== */
 	// Shows the information of Patient
 	public String[] showPatientInfo() {
 		String[] output = { id, name, disease, sex, admitStatus, age + "" };
@@ -328,6 +332,7 @@ public class Patient {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column label
 		String[] columnLabel = { "ID", "Name", "Disease", "Sex", "Admit Status", "Age" };
@@ -373,14 +378,15 @@ public class Patient {
 		backButton.setStyle(Style.getIconButtonStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
-		// Create event handling for button
-		// Call patientPage
+
+		// Create event handling for button to return to patientPage
 		backButton.setOnAction(e -> primaryStage.setScene(patientPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
 
+		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
 		String[] sortArray = { "Sort By Default", "Sort by ID", "Sort by Name" };
 		ComboBox<String> sortComboBox = new ComboBox<>();
@@ -417,7 +423,8 @@ public class Patient {
 					hBox.setAlignment(Pos.CENTER);
 					vBox.getChildren().add(hBox);
 				}
-			} // Sort by id function
+			}
+			// Sort by id function
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
 				ArrayList<Patient> copyPatients = new ArrayList<Patient>(HospitalManagement.patients);
@@ -471,8 +478,8 @@ public class Patient {
 			}
 		});
 
-		// Arrange panes and objects
-		vBox.setAlignment(Pos.CENTER);
+		/* ============================ ARANGE PANE ============================ */
+		// Create ScrollPane to handle data overflow
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(vBox);
 		scrollPane.setFitToWidth(true);
@@ -490,6 +497,7 @@ public class Patient {
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(180);
 
+		// Create borderpane to hold all pane
 		BorderPane borderPane = new BorderPane();
 		borderPane.setCenter(scrollPane);
 		borderPane.setBottom(HBtn);
@@ -512,7 +520,10 @@ public class Patient {
 		return scene;
 	}
 
-	// Remove Patient page
+	/*
+	 * ============================ REMOVE PATIENT PAGE ============================
+	 */
+	// Prompt the user to choose the patient the he would like to remove
 	public static Scene removePatient(Stage primaryStage) {
 
 		// Back Button
@@ -522,6 +533,8 @@ public class Patient {
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
 		backButton.setOnAction(e -> primaryStage.setScene(patientPage(primaryStage)));
+
+		// HBox to hold Back button
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
@@ -530,7 +543,7 @@ public class Patient {
 		Label label = new Label("Enter Patient's ID:       ");
 		label.setStyle(Style.getTextStyle());
 
-		// Create combo box object
+		// Create combo box object for choosing id
 		ComboBox<String> PatientIdComboBox = new ComboBox<>();
 		for (int i = 0; i < HospitalManagement.patients.size(); i++) {
 			PatientIdComboBox.getItems().add(HospitalManagement.patients.get(i).id);
@@ -549,7 +562,7 @@ public class Patient {
 		// Create border pane object
 		BorderPane borderPane = new BorderPane();
 
-		// Create button object
+		// Create Remove button object
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("  Remove", removeIcon);
 		removeButton.setLayoutX(620);
@@ -618,9 +631,8 @@ public class Patient {
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							// Remove item from array list
 							HospitalManagement.patients.remove(index);
-							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
-									JOptionPane.INFORMATION_MESSAGE);
 
 							// Remove item from database
 							if (HospitalManagement.connect && HospitalManagement.storeData) {
@@ -630,11 +642,14 @@ public class Patient {
 									connection.createStatement().executeUpdate(
 											"DELETE FROM Patient WHERE id = " + PatientIdComboBox.getValue());
 								} catch (SQLException e1) {
-									// Exception Catch
 									e1.printStackTrace();
 								}
 							}
 
+							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
+									JOptionPane.INFORMATION_MESSAGE);
+
+							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
 
@@ -677,7 +692,7 @@ public class Patient {
 		return scene;
 	}
 
-	// Input validation method
+	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean patientValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Patient> arrayList) {
 
 		// Check for empty input
@@ -694,8 +709,6 @@ public class Patient {
 			errorMsg = "ID must be a non-negative number less than 10000.";
 			return false;
 		}
-		
-
 
 		// Check if ID consists of positive numbers only or not
 		try {

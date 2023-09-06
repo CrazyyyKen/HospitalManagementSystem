@@ -55,7 +55,7 @@ public class Staff {
 		this.salary = salary;
 	}
 
-	// Staff main page
+	/* ============================ STAFF MAIN PAGE ============================ */
 	public static Scene staffPage(Stage primaryStage) {
 
 		// Add New Staff Button
@@ -148,9 +148,11 @@ public class Staff {
 		return scene;
 	}
 
+	/* ============================ ADD STAFF ============================ */
 	// Prompts user to enter new information of Staff
 	public Scene newStaff(Stage primaryStage) {
-		// Create button object
+		
+		// Create back button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
 		Button backButton = new Button("  Back", backIcon);
 		backButton.setStyle(Style.getIconStyle());
@@ -172,7 +174,7 @@ public class Staff {
 		Label salaryLabel = new Label("Enter staff's salary (RM) : ");
 		salaryLabel.setStyle(Style.getTextStyle());
 
-		// Create text field objects
+		// Create text field objects for id, name, salary
 		TextField idTextField = new TextField();
 		idTextField.setStyle(Style.getTextfieldStyle());
 		idTextField.setPromptText("123");
@@ -183,14 +185,14 @@ public class Staff {
 		salaryTextField.setStyle(Style.getTextfieldStyle());
 		salaryTextField.setPromptText("3000");
 
-		// Create combo box objects
+		// Create combo box objects for designation
 		String[] designationArray = { "Doctor", "Nurse", "Pharmacist", "Human Resources Manager", "Finance Manager",
 				"Nurse Manager", "Laboratory Manager", "Maintenance Staff" };
 		ComboBox<String> designationComboBox = new ComboBox<>();
 		designationComboBox.setStyle(Style.getTextStyle());
 		designationComboBox.getItems().addAll(designationArray);
 		designationComboBox.getSelectionModel().selectFirst();
-
+		// Create combo box objects for sex
 		ComboBox<String> sexComboBox = new ComboBox<>();
 		sexComboBox.setStyle(Style.getTextStyle());
 		sexComboBox.getItems().addAll("Male", "Female");
@@ -262,6 +264,7 @@ public class Staff {
 				}
 
 			} else {
+				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 		});
@@ -308,11 +311,13 @@ public class Staff {
 		return output;
 	}
 	
+	/* ========================== DISPLAY STAFF INFO ========================== */
 	// Show Staff's information page
 	public static Scene showStaffPage(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
+		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column label
 		String[] columnLabel = { "ID", "Name", "Designation", "Sex", "Salary" };
@@ -358,14 +363,15 @@ public class Staff {
 		backButton.setStyle(Style.getIconButtonStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
-		// Create event handling for button
-		// Call StaffPage
+		
+		// Create event handling for button to return to Staff page
 		backButton.setOnAction(e -> primaryStage.setScene(staffPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
 
+		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
 		String[] sortArray = { "Sort By Default", "Sort by ID", "Sort by Name" };
 		ComboBox<String> sortComboBox = new ComboBox<>();
@@ -456,8 +462,8 @@ public class Staff {
 			}
 		});
 
-		// Arrange panes and objects
-		vBox.setAlignment(Pos.CENTER);
+		/* ============================ ARANGE PANE ============================ */
+		// Create ScrollPane to handle data overflow
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(vBox);
 		scrollPane.setFitToWidth(true);
@@ -474,7 +480,8 @@ public class Staff {
 		rightLimit.setPrefWidth(180);
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(180);
-
+		
+		// Create borderpane to hold all pane
 		BorderPane borderPane = new BorderPane();
 		borderPane.setCenter(scrollPane);
 		borderPane.setBottom(HBtn);
@@ -498,7 +505,8 @@ public class Staff {
 	}
 	
 	
-	// Remove Staff page
+	/* ============================ REMOVE STAFF PAGE ============================ */
+	// Prompt the user to choose the staff the he would like to remove
 	public static Scene removeStaff(Stage primaryStage) {
 
 		// Back Button
@@ -535,7 +543,7 @@ public class Staff {
 		// Create border pane object
 		BorderPane borderPane = new BorderPane();
 
-		// Create button object
+		// Create delete button object
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("  Remove", removeIcon);
 		removeButton.setLayoutX(620);
@@ -604,6 +612,7 @@ public class Staff {
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							// Remove item from array list
 							HospitalManagement.staffs.remove(index);
 							
 							// Remove item from database
@@ -613,17 +622,16 @@ public class Staff {
 									connection.createStatement().executeUpdate(
 											"DELETE FROM Staff WHERE id = "+staffIdComboBox.getValue());
 								} catch (SQLException e1) {
-									// Exception Catch
 									e1.printStackTrace();
 								}
 							}
 							
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
-
+							
+							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
-
 							if (reply2 == JOptionPane.YES_OPTION) {
 								primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 							} else {
@@ -664,7 +672,7 @@ public class Staff {
 	}
 
 
-	// Input validation method
+	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean staffValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Staff> arrayList) {
 		
 		// Check for empty input
