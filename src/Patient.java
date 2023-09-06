@@ -161,7 +161,7 @@ public class Patient {
 		backButton.setLayoutX(185);
 		backButton.setLayoutY(100);
 
-		// Create label objects 
+		// Create label objects
 		Label idLabel = new Label("Enter Patient's ID : ");
 		idLabel.setStyle(Style.getTextStyle());
 		Label nameLabel = new Label("Enter Patient's Name : ");
@@ -185,24 +185,25 @@ public class Patient {
 		TextField diseaseTextField = new TextField();
 		diseaseTextField.setStyle(Style.getTextfieldStyle());
 		diseaseTextField.setPromptText("Fever");
-		
+
 		// Sex
 		ComboBox<String> sexComboBox = new ComboBox<>();
 		sexComboBox.setStyle(Style.getTextStyle());
 		sexComboBox.getItems().addAll("Male", "Female");
 		sexComboBox.getSelectionModel().selectFirst();
 		sexComboBox.setPrefWidth(250);
-		
+
 		// Create combo box objects
-		String[] admitStatusArray = { "Admitted", "Outpatient", "Emergency Admission", "Scheduled Admission", "Discharged", "Transferred"};
+		String[] admitStatusArray = { "Admitted", "Outpatient", "Emergency Admission", "Scheduled Admission",
+				"Discharged", "Transferred" };
 		ComboBox<String> admitStatusComboBox = new ComboBox<>();
 		admitStatusComboBox.setStyle(Style.getTextStyle());
 		admitStatusComboBox.getItems().addAll(admitStatusArray);
 		admitStatusComboBox.getSelectionModel().selectFirst();
 		admitStatusComboBox.setPrefWidth(250);
-		
+
 		// Create spinner objects
-		Spinner<Integer> ageSpinner = new Spinner<>(0, 100, 20);
+		Spinner<Integer> ageSpinner = new Spinner<>(0, 200, 20);
 		ageSpinner.setEditable(true);
 		ageSpinner.setStyle(Style.getTextStyle());
 		ageSpinner.getEditor().setPrefWidth(250);
@@ -218,7 +219,7 @@ public class Patient {
 
 		// Create event handling for button
 		addButton.setOnAction(e -> {
-			
+
 			// Initialization of data field
 			String idInput = idTextField.getText();
 			String nameInput = nameTextField.getText();
@@ -226,16 +227,16 @@ public class Patient {
 			String sexInput = sexComboBox.getValue();
 			String admitStatusInput = admitStatusComboBox.getValue();
 			String ageInput = Integer.toString(ageSpinner.getValue());
-			
+
 			// Combine text field into TextField array
-			TextField[] textFieldArray = {idTextField, nameTextField, diseaseTextField};
-			
+			TextField[] textFieldArray = { idTextField, nameTextField, diseaseTextField };
+
 			// Combine String input into an array
-			String[] inputArray = {idInput, nameInput, diseaseInput, sexInput, admitStatusInput, ageInput};
-			
+			String[] inputArray = { idInput, nameInput, diseaseInput, sexInput, admitStatusInput, ageInput };
+
 			// Validate user input
-			if(patientValidation(textFieldArray, inputArray, HospitalManagement.patients)) {
-				
+			if (patientValidation(textFieldArray, inputArray, HospitalManagement.patients)) {
+
 				// Assign values to Patient's data field
 				id = String.format("%03d", Integer.parseInt(idInput));
 				name = nameInput;
@@ -243,22 +244,22 @@ public class Patient {
 				sex = sexInput;
 				admitStatus = admitStatusInput;
 				age = Integer.parseInt(ageInput);
-				
+
 				// Add patient object to ArrayList
 				HospitalManagement.patients.add(this);
-				
+
 				// Add patient to Database
-				if(HospitalManagement.connect && HospitalManagement.storeData) {
+				if (HospitalManagement.connect && HospitalManagement.storeData) {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate(
-								"insert into Patient values('" + id + "', '"+ name + "', '"+ disease + "', '"+ sex + "', '"+ admitStatus + "', "+ age + ")");
+						connection.createStatement().executeUpdate("insert into Patient values('" + id + "', '" + name
+								+ "', '" + disease + "', '" + sex + "', '" + admitStatus + "', " + age + ")");
 						connection.close();
 					} catch (SQLException e1) {
 						// Exception Catch
 						e1.printStackTrace();
 					}
-					
+
 				}
 
 				// Check if user would like to return to previous section or return to main menu
@@ -321,7 +322,7 @@ public class Patient {
 		String[] output = { id, name, disease, sex, admitStatus, age + "" };
 		return output;
 	}
-	
+
 	// Show Patient's information page
 	public static Scene showPatientPage(Stage primaryStage) {
 
@@ -510,8 +511,7 @@ public class Patient {
 
 		return scene;
 	}
-	
-	
+
 	// Remove Patient page
 	public static Scene removePatient(Stage primaryStage) {
 
@@ -573,12 +573,12 @@ public class Patient {
 			infoVBox.setAlignment(Pos.CENTER);
 
 			// Create HBox object for column label
-			String[] columnLabel = { "ID", "Name", "Disease", "Sex", "Admit Status", "Age"  };
+			String[] columnLabel = { "ID", "Name", "Disease", "Sex", "Admit Status", "Age" };
 			HBox columnLabelHBox = new HBox(10);
 			columnLabelHBox.setAlignment(Pos.CENTER);
 			columnLabelHBox.setStyle(Style.getHEADERStyle());
 			columnLabelHBox.setPrefSize(800, 50);
-			
+
 			for (int i = 0; i < 6; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(150);
@@ -621,19 +621,19 @@ public class Patient {
 							HospitalManagement.patients.remove(index);
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
-							
+
 							// Remove item from database
-							if(HospitalManagement.connect && HospitalManagement.storeData) {
+							if (HospitalManagement.connect && HospitalManagement.storeData) {
 								try {
-									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+									Connection connection = DriverManager
+											.getConnection(HospitalManagement.getDatabasePath());
 									connection.createStatement().executeUpdate(
-											"DELETE FROM Patient WHERE id = "+PatientIdComboBox.getValue());
+											"DELETE FROM Patient WHERE id = " + PatientIdComboBox.getValue());
 								} catch (SQLException e1) {
 									// Exception Catch
 									e1.printStackTrace();
 								}
 							}
-							
 
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
@@ -649,7 +649,7 @@ public class Patient {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
-		
+
 		// Create VBox to limit the position of information
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(210);
@@ -677,10 +677,9 @@ public class Patient {
 		return scene;
 	}
 
-
 	// Input validation method
 	private boolean patientValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Patient> arrayList) {
-		
+
 		// Check for empty input
 		for (int i = 0; i < inputArray.length; i++) {
 			if (inputArray[i].isEmpty()) {
@@ -688,7 +687,16 @@ public class Patient {
 				return false;
 			}
 		}
+
+		// Check if ID overflow
+		if (inputArray[0].length() > 4) {
+			textFieldArray[0].clear();
+			errorMsg = "ID must be a non-negative number less than 10000.";
+			return false;
+		}
 		
+
+
 		// Check if ID consists of positive numbers only or not
 		try {
 			Integer.parseInt(inputArray[0]);
@@ -702,10 +710,10 @@ public class Patient {
 			textFieldArray[0].clear();
 			this.errorMsg = "ID must be a positive number without any spacing.";
 			return false;
-		}		
+		}
 		return true;
 	}
-	
+
 	// Getter
 	public String getErrorMsg() {
 		return errorMsg;

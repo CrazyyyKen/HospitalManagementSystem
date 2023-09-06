@@ -302,7 +302,7 @@ public class HospitalManagement extends Application {
 				if (!medTableCheck.next()) {// The Medical table doesn't exist
 					// Create Medical Table
 					statement.executeUpdate(
-							"create table Medical(name varchar(100), manufacturer varchar(50), expiryDate varchar(12), cost int, unit int)");
+							"create table Medical(name varchar(100), manufacturer varchar(100), expiryDate varchar(10), cost int, unit int)");
 				}
 
 				// Execute a query to check if any records exist in Medical table

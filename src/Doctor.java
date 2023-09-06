@@ -713,6 +713,7 @@ public class Doctor {
 			errorMsg = "Room number must be a non-negative number less than 10000.";
 			return false;
 		}
+		
 		// Check if ID consists of positive numbers only or not
 		try {
 			Integer.parseInt(idInput);

@@ -675,6 +675,13 @@ public class Staff {
 			}
 		}
 		
+		// Check if ID overflow
+		if (inputArray[0].length() > 4) {
+			textFieldArray[0].clear();
+			errorMsg = "ID must be a non-negative number less than 10000.";
+			return false;
+		}
+		
 		// Check if ID consists of positive numbers only or not
 		try {
 			Integer.parseInt(inputArray[0]);
