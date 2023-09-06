@@ -1,9 +1,12 @@
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -85,31 +88,70 @@ public class HospitalManagement extends Application {
 					"HospitalDatabase.accdb file cannot be found!"
 							+ "\n\n Rest assured that you can still use our service without storage.",
 					"Error", JOptionPane.WARNING_MESSAGE);
+			
+			// Check if the user want to create new file to store data
 			int createFile = JOptionPane.showConfirmDialog(null,
-					"Would you like to create a HospitalManagement.accdb file to store data?",
-					"File Creation", JOptionPane.YES_NO_OPTION);
-			if(createFile == JOptionPane.YES_OPTION) {
-				// Create a file if it does not exist
-				String fileName = "HospitalManagement.accdb";
-				File file = new File(System.getProperty("user.dir"), fileName);
-				fileExist = true;
+					"Would you like to create a HospitalDatabase.accdb file to store data?", "File Creation",
+					JOptionPane.YES_NO_OPTION);
+			if (createFile == JOptionPane.YES_OPTION) {
+				
+				// Create a file to store data
+				String fileName = "HospitalDatabase.accdb";
+				String separator = System.getProperty("file.separator");
+				String fileDirectory = System.getProperty("user.dir") + separator + "src" + separator + "resources"
+						+ separator + fileName;
+				File file = new File(fileDirectory);
+				
+				// change file format & Create a new Access database
+				try {
+					Database db = new DatabaseBuilder(file).setFileFormat(Database.FileFormat.V2000).create();
+					db.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (file.exists() && !file.isDirectory()) {
+					JOptionPane.showMessageDialog(null, "Successfully created HospitalDatabase.accdb file!",
+							"File Created", JOptionPane.INFORMATION_MESSAGE);
+					fileExist = true;
+					storeData =  true;
+				} else {
+					
+					// If fail to create file
+					JOptionPane.showMessageDialog(null, "Fail to create HospitalDatabase.accdb file!", "Error",
+							JOptionPane.INFORMATION_MESSAGE);
+					int option = JOptionPane.showConfirmDialog(null, "Would you like to continue using our service?",
+							"Error", JOptionPane.YES_NO_OPTION);
+					
+					// Exit program
+					if (option == JOptionPane.NO_OPTION) {
+						System.exit(0);
+					}
+				}
+
 			}
 		}
 
 		if (fileExist) {
 			// Connect with .accdb file
 			Connection connection = DriverManager.getConnection(databasePath);
-			if (connection != null) { // Connected to Hospital Database
+			
+			if (connection != null) { 
+				// Connected to Hospital Database
 				connect = true;
 				JOptionPane.showMessageDialog(null, "Successfully connected to Hospital Database!", "Success Message",
 						JOptionPane.INFORMATION_MESSAGE);
-				int store = JOptionPane.showConfirmDialog(null,
-						"Would you like to store your data in the database? \n\n"
-								+ "*Note that you can continue using our service even without storage.",
-						"Connected to Database", JOptionPane.YES_NO_OPTION);
-				if (store == JOptionPane.YES_OPTION) {
-					storeData = true;
+				
+				// To confirm if the user want to store data to database
+				if(!storeData) {
+					int store = JOptionPane.showConfirmDialog(null,
+							"Would you like to store your data in the database? \n\n"
+									+ "*Note that you can continue using our service even without storage.",
+							"Connected to Database", JOptionPane.YES_NO_OPTION);
+					if (store == JOptionPane.YES_OPTION) {
+						storeData = true;
+					}
 				}
+
 
 			} else {
 				connect = false;
@@ -400,7 +442,7 @@ public class HospitalManagement extends Application {
 			laboratories.add(new Lab("Cytology Laboratory", 10000));
 			laboratories.add(new Lab("Blood Bank", 10000));
 			laboratories.add(new Lab("Imaging Laboratory", 10000));
-			
+
 			// Initialization of first 5 facilities
 			facilities.add(new Facility("Microscopes"));
 			facilities.add(new Facility("Specimen"));
@@ -409,7 +451,7 @@ public class HospitalManagement extends Application {
 			facilities.add(new Facility("Cytogenetics"));
 
 		}
-
+		// Launch screen
 		launch(args);
 
 	}
