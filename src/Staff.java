@@ -1,9 +1,6 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+// IMPORT libraries/files
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -112,7 +109,7 @@ public class Staff extends Role implements PageManager {
 
 		// Call show method
 		displayButton.setOnAction(e -> {
-			if (HospitalManagement.staffs.isEmpty()) {
+			if (DatabaseHandler.staffs.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Staff's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
 				primaryStage.setScene(show(primaryStage));
@@ -121,7 +118,7 @@ public class Staff extends Role implements PageManager {
 
 		// Call removeDoctor method
 		removeButton.setOnAction(e -> {
-			if (HospitalManagement.staffs.isEmpty()) {
+			if (DatabaseHandler.staffs.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Staff's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
 				primaryStage.setScene(remove(primaryStage));
@@ -221,7 +218,7 @@ public class Staff extends Role implements PageManager {
 			String[] inputArray = { idInput, nameInput, salaryInput, designationInput, sexInput };
 
 			// Validate user input
-			if (validation(textFieldArray, inputArray, HospitalManagement.staffs)) {
+			if (validation(textFieldArray, inputArray, DatabaseHandler.staffs)) {
 
 				// Assign values to Staff's data field
 				setId(String.format("%03d", Integer.parseInt(idInput)));
@@ -231,20 +228,11 @@ public class Staff extends Role implements PageManager {
 				salary = Integer.parseInt(salaryInput);
 
 				// Add Staff object to ArrayList
-				HospitalManagement.staffs.add(this);
+				DatabaseHandler.staffs.add(this);
 
 				// Add Staff to Database
-				if (HospitalManagement.connect && HospitalManagement.storeData) {
-					try {
-						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate("insert into Staff values('" + getId() + "', '"
-								+ getName() + "', '" + designation + "', '" + sex + "', " + salary + ")");
-						connection.close();
-					} catch (SQLException e1) {
-						// Exception Catch
-						e1.printStackTrace();
-					}
-				}
+				DatabaseHandler.addDatabase("insert into Staff values('" + getId() + "', '"
+						+ getName() + "', '" + designation + "', '" + sex + "', " + salary + ")");
 
 				// Check if user would like to return to previous section or return to main menu
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
@@ -335,14 +323,14 @@ public class Staff extends Role implements PageManager {
 		vBox.getChildren().addAll(columnLabelHBox);
 
 		// Create and insert HBox object of each staff's info into VBox object
-		for (int i = 0; i < HospitalManagement.staffs.size(); i++) {
+		for (int i = 0; i < DatabaseHandler.staffs.size(); i++) {
 			HBox hBox = new HBox(10);
 
 			for (int j = 0; j < 5; j++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(180);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.staffs.get(i).showInfo()[j]);
+				Text text = new Text(DatabaseHandler.staffs.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -387,14 +375,14 @@ public class Staff extends Role implements PageManager {
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
 
-				for (int i = 0; i < HospitalManagement.staffs.size(); i++) {
+				for (int i = 0; i < DatabaseHandler.staffs.size(); i++) {
 					HBox hBox = new HBox(10);
 
 					for (int j = 0; j < 5; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.staffs.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.staffs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -406,7 +394,7 @@ public class Staff extends Role implements PageManager {
 			} // Sort by id function
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
-				ArrayList<Staff> copyStaffs = new ArrayList<Staff>(HospitalManagement.staffs);
+				ArrayList<Staff> copyStaffs = new ArrayList<Staff>(DatabaseHandler.staffs);
 				copyStaffs.sort((o1, o2) -> o1.getId().compareTo(o2.getId()));
 
 				vBox.getChildren().clear();
@@ -432,7 +420,7 @@ public class Staff extends Role implements PageManager {
 			// Sort by name function
 			else {
 				// Make a copy of ArrayList
-				ArrayList<Staff> copyStaffs = new ArrayList<Staff>(HospitalManagement.staffs);
+				ArrayList<Staff> copyStaffs = new ArrayList<Staff>(DatabaseHandler.staffs);
 				copyStaffs.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
@@ -522,8 +510,8 @@ public class Staff extends Role implements PageManager {
 
 		// Create combo box object
 		ComboBox<String> staffIdComboBox = new ComboBox<>();
-		for (int i = 0; i < HospitalManagement.staffs.size(); i++) {
-			staffIdComboBox.getItems().add(HospitalManagement.staffs.get(i).getId());
+		for (int i = 0; i < DatabaseHandler.staffs.size(); i++) {
+			staffIdComboBox.getItems().add(DatabaseHandler.staffs.get(i).getId());
 		}
 		staffIdComboBox.getSelectionModel().select("Select ID --");
 		staffIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -579,8 +567,8 @@ public class Staff extends Role implements PageManager {
 			}
 
 			// Display selected Staff's information
-			for (int i = 0; i < HospitalManagement.staffs.size(); i++) {
-				if (HospitalManagement.staffs.get(i).getId().equals(staffIdComboBox.getValue())) {
+			for (int i = 0; i < DatabaseHandler.staffs.size(); i++) {
+				if (DatabaseHandler.staffs.get(i).getId().equals(staffIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -593,7 +581,7 @@ public class Staff extends Role implements PageManager {
 					for (int j = 0; j < 5; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
-						Text text = new Text(HospitalManagement.staffs.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.staffs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -605,24 +593,16 @@ public class Staff extends Role implements PageManager {
 					removeButton.setOnAction(e2 -> {
 						int reply = JOptionPane.showConfirmDialog(
 								null, "Are you sure you want to remove "
-										+ HospitalManagement.staffs.get(index).getName() + "?",
+										+ DatabaseHandler.staffs.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							
 							// Remove item from array list
-							HospitalManagement.staffs.remove(index);
+							DatabaseHandler.staffs.remove(index);
 
 							// Remove item from database
-							if (HospitalManagement.connect && HospitalManagement.storeData) {
-								try {
-									Connection connection = DriverManager
-											.getConnection(HospitalManagement.getDatabasePath());
-									connection.createStatement().executeUpdate(
-											"DELETE FROM Staff WHERE id = " + staffIdComboBox.getValue());
-								} catch (SQLException e1) {
-									e1.printStackTrace();
-								}
-							}
+							DatabaseHandler.removeDatabase("DELETE FROM Staff WHERE id = " + staffIdComboBox.getValue());
 
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
@@ -660,7 +640,7 @@ public class Staff extends Role implements PageManager {
 
 		// Set Background image
 		borderPane.setBackground(
-				new Background(new BackgroundImage(new Image("/resources/remove.png"), BackgroundRepeat.REPEAT,
+				new Background(new BackgroundImage(new Image("/resources/removeStaff.png"), BackgroundRepeat.REPEAT,
 						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
 						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
 

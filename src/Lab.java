@@ -1,10 +1,7 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
+// IMPORT libraries/files
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -103,7 +100,7 @@ public class Lab extends Property implements PageManager {
 
 		// Call show method
 		displayButton.setOnAction(e -> {
-			if (HospitalManagement.laboratories.isEmpty()) {
+			if (DatabaseHandler.laboratories.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Lab's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
 				primaryStage.setScene(show(primaryStage));
@@ -112,7 +109,7 @@ public class Lab extends Property implements PageManager {
 
 		// Call remove method
 		removeButton.setOnAction(e -> {
-			if (HospitalManagement.laboratories.isEmpty()) {
+			if (DatabaseHandler.laboratories.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Lab's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
 				primaryStage.setScene(remove(primaryStage));
@@ -178,26 +175,17 @@ public class Lab extends Property implements PageManager {
 			String costInput = costTextField.getText();
 
 			// Validate user input
-			if (validation(nameTextField, costTextField, labNameInput, costInput, HospitalManagement.laboratories)) {
+			if (validation(nameTextField, costTextField, labNameInput, costInput, DatabaseHandler.laboratories)) {
 				// Assign value to facility object's data field
 				setName(labNameInput);
 				setCost(Integer.parseInt(costInput));
 
 				// Add facility object to ArrayList
-				HospitalManagement.laboratories.add(this);
+				DatabaseHandler.laboratories.add(this);
 
 				// Add Lab to Database
-				if (HospitalManagement.connect && HospitalManagement.storeData) {
-					try {
-						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement()
-								.executeUpdate("insert into Lab values('" + getName() + "', " + getCost() + ")");
-						connection.close();
-					} catch (SQLException e1) {
-						// Exception Catch
-						e1.printStackTrace();
-					}
-				}
+				DatabaseHandler.addDatabase("insert into Lab values('" + getName() + "', " + getCost() + ")");
+				
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
 
 				// Check if user would like to return to previous section or return to main menu
@@ -281,14 +269,14 @@ public class Lab extends Property implements PageManager {
 		vBox.getChildren().addAll(columnLabelHBox);
 
 		// Create and insert HBox object of each Lab's info into VBox object
-		for (int i = 0; i < HospitalManagement.laboratories.size(); i++) {
+		for (int i = 0; i < DatabaseHandler.laboratories.size(); i++) {
 			HBox hBox = new HBox(10);
 
 			for (int j = 0; j < 2; j++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(200);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.laboratories.get(i).showInfo()[j]);
+				Text text = new Text(DatabaseHandler.laboratories.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -333,14 +321,14 @@ public class Lab extends Property implements PageManager {
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
 
-				for (int i = 0; i < HospitalManagement.laboratories.size(); i++) {
+				for (int i = 0; i < DatabaseHandler.laboratories.size(); i++) {
 					HBox hBox = new HBox(10);
 
 					for (int j = 0; j < 2; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(200);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.laboratories.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.laboratories.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -352,7 +340,7 @@ public class Lab extends Property implements PageManager {
 			} // Sort by name function
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
-				ArrayList<Lab> copyLabs = new ArrayList<Lab>(HospitalManagement.laboratories);
+				ArrayList<Lab> copyLabs = new ArrayList<Lab>(DatabaseHandler.laboratories);
 				copyLabs.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
@@ -378,7 +366,7 @@ public class Lab extends Property implements PageManager {
 			// Sort by Unit function
 			else {
 				// Make a copy of ArrayList
-				ArrayList<Lab> copyLabs = new ArrayList<Lab>(HospitalManagement.laboratories);
+				ArrayList<Lab> copyLabs = new ArrayList<Lab>(DatabaseHandler.laboratories);
 				copyLabs.sort((o1, o2) -> Integer.toString(o1.getCost()).compareTo(Integer.toString(o2.getCost())));
 
 				vBox.getChildren().clear();
@@ -465,8 +453,8 @@ public class Lab extends Property implements PageManager {
 
 		// Create combo box object
 		ComboBox<String> LabIdComboBox = new ComboBox<>();
-		for (int i = 0; i < HospitalManagement.laboratories.size(); i++) {
-			LabIdComboBox.getItems().add(HospitalManagement.laboratories.get(i).getName());
+		for (int i = 0; i < DatabaseHandler.laboratories.size(); i++) {
+			LabIdComboBox.getItems().add(DatabaseHandler.laboratories.get(i).getName());
 		}
 		LabIdComboBox.getSelectionModel().select("Select Lab --");
 		LabIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -522,8 +510,8 @@ public class Lab extends Property implements PageManager {
 			}
 
 			// Display selected Lab's information
-			for (int i = 0; i < HospitalManagement.laboratories.size(); i++) {
-				if (HospitalManagement.laboratories.get(i).getName().equals(LabIdComboBox.getValue())) {
+			for (int i = 0; i < DatabaseHandler.laboratories.size(); i++) {
+				if (DatabaseHandler.laboratories.get(i).getName().equals(LabIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -536,7 +524,7 @@ public class Lab extends Property implements PageManager {
 					for (int j = 0; j < 2; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(250);
-						Text text = new Text(HospitalManagement.laboratories.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.laboratories.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -548,25 +536,16 @@ public class Lab extends Property implements PageManager {
 					removeButton.setOnAction(e2 -> {
 						int reply = JOptionPane.showConfirmDialog(null,
 								"Are you sure you want to remove "
-										+ HospitalManagement.laboratories.get(index).getName() + "?",
+										+ DatabaseHandler.laboratories.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
+							
 							// Remove item from array list
-							HospitalManagement.laboratories.remove(index);
+							DatabaseHandler.laboratories.remove(index);
 
 							// Remove item from database
-							if (HospitalManagement.connect && HospitalManagement.storeData) {
-								try {
-									Connection connection = DriverManager
-											.getConnection(HospitalManagement.getDatabasePath());
-									connection.createStatement().executeUpdate(
-											"DELETE FROM Lab WHERE lab = '" + LabIdComboBox.getValue() + "'");
-								} catch (SQLException e1) {
-									// Exception Catch
-									e1.printStackTrace();
-								}
-							}
+							DatabaseHandler.removeDatabase("DELETE FROM Lab WHERE lab = '" + LabIdComboBox.getValue() + "'");
 
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);

@@ -1,6 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+// IMPORT libraries/files
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javafx.geometry.Insets;
@@ -102,7 +100,7 @@ public class Facility extends Hospital implements PageManager {
 
 		// Call show method
 		displayButton.setOnAction(e -> {
-			if (HospitalManagement.facilities.isEmpty()) {
+			if (DatabaseHandler.facilities.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Facility's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
@@ -112,7 +110,7 @@ public class Facility extends Hospital implements PageManager {
 
 		// Call remove method
 		removeButton.setOnAction(e -> {
-			if (HospitalManagement.facilities.isEmpty()) {
+			if (DatabaseHandler.facilities.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Facility's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
@@ -174,24 +172,16 @@ public class Facility extends Hospital implements PageManager {
 			String facilityInput = nameTextField.getText();
 
 			// Validate user input
-			if (validation(nameTextField, facilityInput, HospitalManagement.facilities)) {
+			if (validation(nameTextField, facilityInput, DatabaseHandler.facilities)) {
 				// Assign value to facility object's data field
 				setName(facilityInput);
 
 				// Add facility object to ArrayList
-				HospitalManagement.facilities.add(this);
+				DatabaseHandler.facilities.add(this);
 
 				// Add Facility to Database
-				if (HospitalManagement.connect && HospitalManagement.storeData) {
-					try {
-						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate("insert into Facility values('" + getName() + "')");
-						connection.close();
-					} catch (SQLException e1) {
-						// Exception Catch
-						e1.printStackTrace();
-					}
-				}
+				DatabaseHandler.addDatabase("insert into Facility values('" + getName() + "')");
+
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
 
 				// Check if user would like to return to previous section or return to main menu
@@ -272,14 +262,14 @@ public class Facility extends Hospital implements PageManager {
 		vBox.getChildren().addAll(columnFacilityHBox);
 
 		// Create and insert HBox object of each Facility's info into VBox object
-		for (int i = 0; i < HospitalManagement.facilities.size(); i++) {
+		for (int i = 0; i < DatabaseHandler.facilities.size(); i++) {
 			HBox hBox = new HBox(10);
 
 			for (int j = 0; j < 1; j++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(300);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.facilities.get(i).showInfo()[j]);
+				Text text = new Text(DatabaseHandler.facilities.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -324,14 +314,14 @@ public class Facility extends Hospital implements PageManager {
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnFacilityHBox);
 
-				for (int i = 0; i < HospitalManagement.facilities.size(); i++) {
+				for (int i = 0; i < DatabaseHandler.facilities.size(); i++) {
 					HBox hBox = new HBox(10);
 
 					for (int j = 0; j < 1; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(400);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.facilities.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.facilities.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -343,7 +333,7 @@ public class Facility extends Hospital implements PageManager {
 			} // Sort by facility function
 			else {
 				// Make a copy of ArrayList
-				ArrayList<Facility> copyfacilities = new ArrayList<Facility>(HospitalManagement.facilities);
+				ArrayList<Facility> copyfacilities = new ArrayList<Facility>(DatabaseHandler.facilities);
 				copyfacilities.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
@@ -434,8 +424,8 @@ public class Facility extends Hospital implements PageManager {
 
 		// Create combo box object
 		ComboBox<String> FacilityIdComboBox = new ComboBox<>();
-		for (int i = 0; i < HospitalManagement.facilities.size(); i++) {
-			FacilityIdComboBox.getItems().add(HospitalManagement.facilities.get(i).getName());
+		for (int i = 0; i < DatabaseHandler.facilities.size(); i++) {
+			FacilityIdComboBox.getItems().add(DatabaseHandler.facilities.get(i).getName());
 		}
 		FacilityIdComboBox.getSelectionModel().select("Select Facility --");
 		FacilityIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -491,8 +481,8 @@ public class Facility extends Hospital implements PageManager {
 			}
 
 			// Display selected Facility's information
-			for (int i = 0; i < HospitalManagement.facilities.size(); i++) {
-				if (HospitalManagement.facilities.get(i).getName().equals(FacilityIdComboBox.getValue())) {
+			for (int i = 0; i < DatabaseHandler.facilities.size(); i++) {
+				if (DatabaseHandler.facilities.get(i).getName().equals(FacilityIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -505,7 +495,7 @@ public class Facility extends Hospital implements PageManager {
 					for (int j = 0; j < 1; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
-						Text text = new Text(HospitalManagement.facilities.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.facilities.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -517,24 +507,16 @@ public class Facility extends Hospital implements PageManager {
 					removeButton.setOnAction(e2 -> {
 						int reply = JOptionPane.showConfirmDialog(
 								null, "Are you sure you want to remove "
-										+ HospitalManagement.facilities.get(index).getName() + "?",
+										+ DatabaseHandler.facilities.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
-							HospitalManagement.facilities.remove(index);
+							DatabaseHandler.facilities.remove(index);
 
 							// Remove item from database
-							if (HospitalManagement.connect && HospitalManagement.storeData) {
-								try {
-									Connection connection = DriverManager
-											.getConnection(HospitalManagement.getDatabasePath());
-									connection.createStatement().executeUpdate("DELETE FROM Facility WHERE Facility = '"
-											+ FacilityIdComboBox.getValue() + "'");
-								} catch (SQLException e1) {
-									e1.printStackTrace();
-								}
-							}
+							DatabaseHandler.removeDatabase("DELETE FROM Facility WHERE Facility = '"
+									+ FacilityIdComboBox.getValue() + "'");
 
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);

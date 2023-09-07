@@ -1,4 +1,4 @@
-import java.sql.*;
+// IMPORT libraries/files
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javafx.geometry.Insets;
@@ -104,7 +104,7 @@ public class Doctor extends Role implements PageManager {
 
 		// Call show method
 		displayButton.setOnAction(e -> {
-			if (HospitalManagement.doctors.isEmpty()) {
+			if (DatabaseHandler.doctors.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Doctor's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
@@ -114,7 +114,7 @@ public class Doctor extends Role implements PageManager {
 
 		// Call remove method
 		removeButton.setOnAction(e -> {
-			if (HospitalManagement.doctors.isEmpty()) {
+			if (DatabaseHandler.doctors.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Doctor's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
@@ -242,7 +242,7 @@ public class Doctor extends Role implements PageManager {
 			String[] inputArray = { idInput, nameInput, qualificationInput, roomInput };
 
 			// Validate user inputs
-			if (validation(textFieldArray, inputArray, HospitalManagement.doctors)) {
+			if (validation(textFieldArray, inputArray, DatabaseHandler.doctors)) {
 
 				// Assign value to doctor object's data fields
 				setId(String.format("%03d", Integer.parseInt(idInput)));
@@ -253,21 +253,12 @@ public class Doctor extends Role implements PageManager {
 				room = Integer.parseInt(roomInput);
 
 				// Add doctor object to ArrayList
-				HospitalManagement.doctors.add(this);
+				DatabaseHandler.doctors.add(this);
 
 				// Add doctor to Database
-				if (HospitalManagement.connect && HospitalManagement.storeData) {
-					try {
-						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement()
-								.executeUpdate("insert into Doctor values('" + getId() + "', '" + getName() + "', '"
-										+ specialist + "', '" + workTime + "', '" + qualification + "', " + room + ")");
-						connection.close();
-					} catch (SQLException e1) {
-						// Exception Catch
-						e1.printStackTrace();
-					}
-				}
+				DatabaseHandler.addDatabase("insert into Doctor values('" + getId() + "', '" + getName()
+						+ "', '" + specialist + "', '" + workTime + "', '" + qualification + "', " + room + ")");
+				
 
 				// Check if user would like to return to previous section or return to main menu
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Success Message",
@@ -366,14 +357,14 @@ public class Doctor extends Role implements PageManager {
 		vBox.getChildren().addAll(columnLabelHBox);
 
 		// Create and insert HBox object of each doctor's info into VBox object
-		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
+		for (int i = 0; i < DatabaseHandler.doctors.size(); i++) {
 			HBox hBox = new HBox(10);
 
 			for (int j = 0; j < 6; j++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(160);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.doctors.get(i).showInfo()[j]);
+				Text text = new Text(DatabaseHandler.doctors.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -419,14 +410,14 @@ public class Doctor extends Role implements PageManager {
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
 
-				for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
+				for (int i = 0; i < DatabaseHandler.doctors.size(); i++) {
 					HBox hBox = new HBox(10);
 
 					for (int j = 0; j < 6; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.doctors.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.doctors.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -439,7 +430,7 @@ public class Doctor extends Role implements PageManager {
 			// Sort by id function
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
-				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
+				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(DatabaseHandler.doctors);
 				copyDoctors.sort((o1, o2) -> o1.getId().compareTo(o2.getId()));
 
 				vBox.getChildren().clear();
@@ -465,7 +456,7 @@ public class Doctor extends Role implements PageManager {
 			// Sort by name function
 			else {
 				// Make a copy of ArrayList
-				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
+				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(DatabaseHandler.doctors);
 				copyDoctors.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
@@ -557,8 +548,8 @@ public class Doctor extends Role implements PageManager {
 
 		// Create combo box object for choosing id
 		ComboBox<String> doctorIdComboBox = new ComboBox<>();
-		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
-			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).getId());
+		for (int i = 0; i < DatabaseHandler.doctors.size(); i++) {
+			doctorIdComboBox.getItems().add(DatabaseHandler.doctors.get(i).getId());
 		}
 		doctorIdComboBox.getSelectionModel().select("Select ID --");
 		doctorIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -614,8 +605,8 @@ public class Doctor extends Role implements PageManager {
 			}
 
 			// Display selected doctor's information
-			for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
-				if (HospitalManagement.doctors.get(i).getId().equals(doctorIdComboBox.getValue())) {
+			for (int i = 0; i < DatabaseHandler.doctors.size(); i++) {
+				if (DatabaseHandler.doctors.get(i).getId().equals(doctorIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -628,7 +619,7 @@ public class Doctor extends Role implements PageManager {
 					for (int j = 0; j < 6; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
-						Text text = new Text(HospitalManagement.doctors.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.doctors.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -640,25 +631,16 @@ public class Doctor extends Role implements PageManager {
 					removeButton.setOnAction(e2 -> {
 						int reply = JOptionPane.showConfirmDialog(
 								null, "Are you sure you want to remove "
-										+ HospitalManagement.doctors.get(index).getName() + "?",
+										+ DatabaseHandler.doctors.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
-							HospitalManagement.doctors.remove(index);
+							DatabaseHandler.doctors.remove(index);
 
 							// Remove item from database
-							if (HospitalManagement.connect && HospitalManagement.storeData) {
-								try {
-									Connection connection = DriverManager
-											.getConnection(HospitalManagement.getDatabasePath());
-									connection.createStatement().executeUpdate(
-											"DELETE FROM Doctor WHERE id = " + doctorIdComboBox.getValue());
-								} catch (SQLException e1) {
-									// Exception Catch
-									e1.printStackTrace();
-								}
-							}
+							DatabaseHandler.removeDatabase("DELETE FROM Doctor WHERE id = " + doctorIdComboBox.getValue());
+							
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
 

@@ -1,6 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+// IMPORT libraries/files
 import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -112,7 +110,7 @@ public class Medical extends Property implements PageManager {
 
 		// Call show method
 		displayButton.setOnAction(e -> {
-			if (HospitalManagement.medicals.isEmpty()) {
+			if (DatabaseHandler.medicals.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Medical's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
@@ -122,7 +120,7 @@ public class Medical extends Property implements PageManager {
 
 		// Call remove method
 		removeButton.setOnAction(e -> {
-			if (HospitalManagement.medicals.isEmpty()) {
+			if (DatabaseHandler.medicals.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Medical's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
@@ -220,7 +218,7 @@ public class Medical extends Property implements PageManager {
 			String inputArray[] = { nameInput, manufacturerInput, costInput };
 
 			// Validate user input
-			if (medicalValidation(textFieldArray, inputArray, HospitalManagement.medicals)) {
+			if (medicalValidation(textFieldArray, inputArray, DatabaseHandler.medicals)) {
 
 				// Assign value to data field
 				setName(nameInput);
@@ -231,19 +229,11 @@ public class Medical extends Property implements PageManager {
 				this.unit = unit.getValue();
 
 				// Add facility object to ArrayList
-				HospitalManagement.medicals.add(this);
+				DatabaseHandler.medicals.add(this);
 
 				// Add Medical to Database
-				if (HospitalManagement.connect && HospitalManagement.storeData) {
-					try {
-						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate("insert into Medical values('" + getName() + "', '"
-								+ manufacturer + "', '" + expiryDate + "', " + getCost() + ", " + this.unit + ")");
-						connection.close();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-				}
+				DatabaseHandler.addDatabase("insert into Medical values('" + getName() + "', '"
+						+ manufacturer + "', '" + expiryDate + "', " + getCost() + ", " + this.unit + ")");
 
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
 				// Check if user would like to return to previous section or return to main menu
@@ -332,14 +322,14 @@ public class Medical extends Property implements PageManager {
 		vBox.getChildren().addAll(columnLabelHBox);
 
 		// Create and insert HBox object of each Medical's info into VBox object
-		for (int i = 0; i < HospitalManagement.medicals.size(); i++) {
+		for (int i = 0; i < DatabaseHandler.medicals.size(); i++) {
 			HBox hBox = new HBox(10);
 
 			for (int j = 0; j < 5; j++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(180);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.medicals.get(i).showInfo()[j]);
+				Text text = new Text(DatabaseHandler.medicals.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -383,14 +373,14 @@ public class Medical extends Property implements PageManager {
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
 
-				for (int i = 0; i < HospitalManagement.medicals.size(); i++) {
+				for (int i = 0; i < DatabaseHandler.medicals.size(); i++) {
 					HBox hBox = new HBox(10);
 
 					for (int j = 0; j < 5; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.medicals.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.medicals.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -402,7 +392,7 @@ public class Medical extends Property implements PageManager {
 			} // Sort by name function
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
-				ArrayList<Medical> copyMedicals = new ArrayList<Medical>(HospitalManagement.medicals);
+				ArrayList<Medical> copyMedicals = new ArrayList<Medical>(DatabaseHandler.medicals);
 				copyMedicals.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
@@ -428,7 +418,7 @@ public class Medical extends Property implements PageManager {
 			// Sort by Unit function
 			else {
 				// Make a copy of ArrayList
-				ArrayList<Medical> copyMedicals = new ArrayList<Medical>(HospitalManagement.medicals);
+				ArrayList<Medical> copyMedicals = new ArrayList<Medical>(DatabaseHandler.medicals);
 				copyMedicals.sort((o1, o2) -> Integer.toString(o1.unit).compareTo(Integer.toString(o2.unit)));
 
 				vBox.getChildren().clear();
@@ -517,8 +507,8 @@ public class Medical extends Property implements PageManager {
 
 		// Create combo box object
 		ComboBox<String> medIdComboBox = new ComboBox<>();
-		for (int i = 0; i < HospitalManagement.medicals.size(); i++) {
-			medIdComboBox.getItems().add(HospitalManagement.medicals.get(i).getName());
+		for (int i = 0; i < DatabaseHandler.medicals.size(); i++) {
+			medIdComboBox.getItems().add(DatabaseHandler.medicals.get(i).getName());
 		}
 		medIdComboBox.getSelectionModel().select("Select Name --");
 		medIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -574,8 +564,8 @@ public class Medical extends Property implements PageManager {
 			}
 
 			// Display selected Medical's information
-			for (int i = 0; i < HospitalManagement.medicals.size(); i++) {
-				if (HospitalManagement.medicals.get(i).getName().equals(medIdComboBox.getValue())) {
+			for (int i = 0; i < DatabaseHandler.medicals.size(); i++) {
+				if (DatabaseHandler.medicals.get(i).getName().equals(medIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -588,7 +578,7 @@ public class Medical extends Property implements PageManager {
 					for (int j = 0; j < 5; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(250);
-						Text text = new Text(HospitalManagement.medicals.get(i).showInfo()[j]);
+						Text text = new Text(DatabaseHandler.medicals.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -600,25 +590,15 @@ public class Medical extends Property implements PageManager {
 					removeButton.setOnAction(e2 -> {
 						int reply = JOptionPane.showConfirmDialog(
 								null, "Are you sure you want to remove "
-										+ HospitalManagement.medicals.get(index).getName() + "?",
+										+ DatabaseHandler.medicals.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
-							HospitalManagement.medicals.remove(index);
+							DatabaseHandler.medicals.remove(index);
 
 							// Remove item from database
-							if (HospitalManagement.connect && HospitalManagement.storeData) {
-								try {
-									Connection connection = DriverManager
-											.getConnection(HospitalManagement.getDatabasePath());
-									connection.createStatement().executeUpdate(
-											"DELETE FROM Medical WHERE name = '" + medIdComboBox.getValue() + "'");
-								} catch (SQLException e1) {
-									// Exception Catch
-									e1.printStackTrace();
-								}
-							}
+							DatabaseHandler.removeDatabase("DELETE FROM Medical WHERE name = '" + medIdComboBox.getValue() + "'");
 
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
