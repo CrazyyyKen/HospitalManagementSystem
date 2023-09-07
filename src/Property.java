@@ -1,4 +1,6 @@
 
+/* ============================ PROPERTY CLASS ============================ */
+// For lab cost and medical cost
 public class Property extends Hospital {
 	private int cost;
 

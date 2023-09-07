@@ -1,3 +1,4 @@
+
 // IMPORT libraries/files
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +13,10 @@ import javax.swing.JOptionPane;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 
+/* ============================ HOSPITAL DATABASE HANDLER ============================ */
 public class DatabaseHandler {
 
+	/* ======================== DATA FIELDS and GETTER ======================= */
 	// Declaration of ArrayList
 	public static ArrayList<Doctor> doctors = new ArrayList<Doctor>();
 	public static ArrayList<Patient> patients = new ArrayList<Patient>();

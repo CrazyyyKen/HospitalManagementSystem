@@ -1,4 +1,6 @@
 
+/* ============================ HOSPITAL CLASS ============================ */
+// Hospital : name and errorMsg for each class
 public class Hospital {
 	private String name;
 	private String errorMsg;

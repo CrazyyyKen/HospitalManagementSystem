@@ -30,6 +30,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
+/* ============================ LAB CLASS ============================ */
 public class Lab extends Property implements PageManager {
 
 	public Lab() {

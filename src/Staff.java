@@ -29,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
+/* ============================ STAFF CLASS ============================ */
 public class Staff extends Role implements PageManager {
 
 	// Data fields

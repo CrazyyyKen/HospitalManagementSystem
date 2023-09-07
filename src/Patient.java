@@ -30,6 +30,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
+/* ============================ PATIENT CLASS ============================ */
 public class Patient extends Role implements PageManager {
 
 	// Data fields

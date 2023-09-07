@@ -1,4 +1,6 @@
 
+/* ============================ HOSPITAL ID ROLE CLASS ============================ */
+// For doctor, patient, staff
 public class Role extends Hospital {
 	private String id;
 

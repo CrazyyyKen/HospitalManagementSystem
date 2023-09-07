@@ -29,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
+/* ============================ FACILITY CLASS ============================ */
 public class Facility extends Hospital implements PageManager {
 
 	// Default constructor
