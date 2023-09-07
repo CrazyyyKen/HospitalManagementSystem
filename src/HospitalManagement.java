@@ -77,7 +77,7 @@ public class HospitalManagement extends Application {
 		});
 
 	}
-	
+
 	/* ============================ MAIN & DATABASE ============================ */
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
@@ -526,7 +526,7 @@ public class HospitalManagement extends Application {
 		doctorButton.setStyle(Style.getIdleButtonStyle());
 		doctorButton.setOnMouseEntered(e -> doctorButton.setStyle(Style.getHoveredIconButtonStyle()));
 		doctorButton.setOnMouseExited(e -> doctorButton.setStyle(Style.getIconButtonStyle()));
-		doctorButton.setOnMouseClicked(e -> primaryStage.setScene(Doctor.doctorPage(primaryStage))); // Go to doctor
+		doctorButton.setOnMouseClicked(e -> primaryStage.setScene(new Doctor().mainPage(primaryStage))); // Go to doctor
 
 		// Patient Button Object
 		ImageView patientIcon = new ImageView(new Image("/resources/patientIcon.png"));
@@ -536,7 +536,8 @@ public class HospitalManagement extends Application {
 		patientButton.setStyle(Style.getIconButtonStyle());
 		patientButton.setOnMouseEntered(e -> patientButton.setStyle(Style.getHoveredIconButtonStyle()));
 		patientButton.setOnMouseExited(e -> patientButton.setStyle(Style.getIconButtonStyle()));
-		patientButton.setOnMouseClicked(e -> primaryStage.setScene(Patient.patientPage(primaryStage))); // Go to patient
+		patientButton.setOnMouseClicked(e -> primaryStage.setScene(new Patient().mainPage(primaryStage))); // Go to
+																											// patient
 
 		// Staff Button Object
 		ImageView staffIcon = new ImageView(new Image("/resources/staffIcon.png"));
@@ -546,7 +547,7 @@ public class HospitalManagement extends Application {
 		staffButton.setStyle(Style.getIconButtonStyle());
 		staffButton.setOnMouseEntered(e -> staffButton.setStyle(Style.getHoveredIconButtonStyle()));
 		staffButton.setOnMouseExited(e -> staffButton.setStyle(Style.getIconButtonStyle()));
-		staffButton.setOnMouseClicked(e -> primaryStage.setScene(Staff.staffPage(primaryStage))); // Go to Staff
+		staffButton.setOnMouseClicked(e -> primaryStage.setScene(new Staff().mainPage(primaryStage))); // Go to Staff
 
 		// Medical Button Object
 		ImageView medicalIcon = new ImageView(new Image("/resources/medIcon.png"));
@@ -556,7 +557,8 @@ public class HospitalManagement extends Application {
 		medicalButton.setStyle(Style.getIconButtonStyle());
 		medicalButton.setOnMouseEntered(e -> medicalButton.setStyle(Style.getHoveredIconButtonStyle()));
 		medicalButton.setOnMouseExited(e -> medicalButton.setStyle(Style.getIconButtonStyle()));
-		medicalButton.setOnMouseClicked(e -> primaryStage.setScene(Medical.medicalPage(primaryStage))); // Go to Staff
+		medicalButton.setOnMouseClicked(e -> primaryStage.setScene(new Medical().mainPage(primaryStage))); // Go to
+																											// Staff
 
 		// Lab Buttons Object
 		ImageView labIcon = new ImageView(new Image("/resources/labIcon.png"));
@@ -566,7 +568,7 @@ public class HospitalManagement extends Application {
 		labButton.setStyle(Style.getIconButtonStyle());
 		labButton.setOnMouseEntered(e -> labButton.setStyle(Style.getHoveredIconButtonStyle()));
 		labButton.setOnMouseExited(e -> labButton.setStyle(Style.getIconButtonStyle()));
-		labButton.setOnMouseClicked(e -> primaryStage.setScene(Lab.labPage(primaryStage))); // Go to Staff
+		labButton.setOnMouseClicked(e -> primaryStage.setScene(new Lab().mainPage(primaryStage))); // Go to Staff
 
 		// Facilities Button Object
 		ImageView facilityIcon = new ImageView(new Image("/resources/facilityIcon.png"));
@@ -576,8 +578,8 @@ public class HospitalManagement extends Application {
 		facilityButton.setStyle(Style.getIconButtonStyle());
 		facilityButton.setOnMouseEntered(e -> facilityButton.setStyle(Style.getHoveredIconButtonStyle()));
 		facilityButton.setOnMouseExited(e -> facilityButton.setStyle(Style.getIconButtonStyle()));
-		facilityButton.setOnMouseClicked(e -> primaryStage.setScene(Facility.facilityPage(primaryStage))); // Go to
-																											// Staff
+		facilityButton.setOnMouseClicked(e -> primaryStage.setScene(new Facility().mainPage(primaryStage))); // Go to
+																												// Staff
 
 		// Exit Button Object
 		ImageView exitIcon = new ImageView(new Image("/resources/exitBtn.png"));
@@ -588,7 +590,7 @@ public class HospitalManagement extends Application {
 		exitButton.setStyle(Style.getIconButtonStyle());
 		exitButton.setOnMouseEntered(e -> exitButton.setStyle(Style.getHoveredIconButtonStyle()));
 		exitButton.setOnMouseExited(e -> exitButton.setStyle(Style.getIconButtonStyle()));
-		
+
 		// Exit Program
 		exitButton.setOnMouseClicked(e -> {
 			int option = JOptionPane.showConfirmDialog(null,

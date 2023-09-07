@@ -34,27 +34,27 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
-public class Medical {
-	private String name;
+public class Medical extends Property implements PageManager {
 	private String manufacturer;
 	private String expiryDate;
-	private int cost;
 	private int unit;
-	private String errorMsg; // Only used for input validation
 
 	public Medical() {
+		super();
 	};
 
 	public Medical(String name, String manufacturer, String expiryDate, int cost, int unit) {
-		this.name = name;
+		setName(name);
 		this.manufacturer = manufacturer;
 		this.expiryDate = expiryDate;
-		this.cost = cost;
+		setCost(cost);
 		this.unit = unit;
 	}
 
-	/* ============================ MEDICAL MAIN PAGE ============================ */
-	public static Scene medicalPage(Stage primaryStage) {
+	/*
+	 * ============================ MEDICAL MAIN PAGE ============================
+	 */
+	public Scene mainPage(Stage primaryStage) {
 
 		// Add New Medical Button
 		ImageView addIcon = new ImageView(new Image("/resources/add.png"));
@@ -89,7 +89,7 @@ public class Medical {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(medicalPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
@@ -104,29 +104,29 @@ public class Medical {
 
 		// Create event handling for buttons
 
-		// Call newMedical method
+		// Call add method
 		addButton.setOnAction(e -> {
 			Medical Medical = new Medical();
-			primaryStage.setScene(Medical.newMedical(primaryStage));
+			primaryStage.setScene(Medical.add(primaryStage));
 		});
 
-		// Call showmedicalPage method
+		// Call show method
 		displayButton.setOnAction(e -> {
 			if (HospitalManagement.medicals.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Medical's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(showMedicalPage(primaryStage));
+				primaryStage.setScene(show(primaryStage));
 			}
 		});
 
-		// Call removeMedical method
+		// Call remove method
 		removeButton.setOnAction(e -> {
 			if (HospitalManagement.medicals.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Medical's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(removeMedical(primaryStage));
+				primaryStage.setScene(remove(primaryStage));
 			}
 		});
 
@@ -145,10 +145,10 @@ public class Medical {
 		Scene scene = new Scene(pane, 1344, 756);
 		return scene;
 	}
-	
+
 	/* ============================ ADD MEDICAL ============================ */
 	// Prompts user to enter new information of medical
-	public Scene newMedical(Stage primaryStage) {
+	public Scene add(Stage primaryStage) {
 
 		// Create button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -156,7 +156,7 @@ public class Medical {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(medicalPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(100);
 
@@ -195,8 +195,8 @@ public class Medical {
 		datePicker.setStyle(Style.getTextStyle());
 		// Set today's date as the default value
 		datePicker.setValue(LocalDate.now());
-		datePicker.setShowWeekNumbers(true);	// show week numbers
-		
+		datePicker.setShowWeekNumbers(true); // show week numbers
+
 		// Create button object
 		Button addButton = new Button("Add");
 		addButton.setLayoutX(620);
@@ -221,30 +221,30 @@ public class Medical {
 
 			// Validate user input
 			if (medicalValidation(textFieldArray, inputArray, HospitalManagement.medicals)) {
-				
+
 				// Assign value to data field
-				name = nameInput;
+				setName(nameInput);
 				manufacturer = manufacturerInput;
 				LocalDate selectedDate = datePicker.getValue();
 				expiryDate = selectedDate.toString();
-				cost = Integer.parseInt(costInput);
+				setCost(Integer.parseInt(costInput));
 				this.unit = unit.getValue();
 
 				// Add facility object to ArrayList
 				HospitalManagement.medicals.add(this);
-				
+
 				// Add Medical to Database
-				if(HospitalManagement.connect && HospitalManagement.storeData) {
+				if (HospitalManagement.connect && HospitalManagement.storeData) {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate(
-								"insert into Medical values('" + name + "', '"+ manufacturer + "', '"+ expiryDate + "', "+ cost + ", "+  this.unit + ")");
+						connection.createStatement().executeUpdate("insert into Medical values('" + getName() + "', '"
+								+ manufacturer + "', '" + expiryDate + "', " + getCost() + ", " + this.unit + ")");
 						connection.close();
 					} catch (SQLException e1) {
 						e1.printStackTrace();
 					}
 				}
-				
+
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
 				// Check if user would like to return to previous section or return to main menu
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
@@ -253,7 +253,7 @@ public class Medical {
 				if (reply == JOptionPane.YES_OPTION) {
 					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 				} else {
-					primaryStage.setScene(medicalPage(primaryStage));
+					primaryStage.setScene(mainPage(primaryStage));
 				}
 			} else {
 				// Show warning message when user enter wrong inputs
@@ -296,17 +296,16 @@ public class Medical {
 		return scene;
 
 	}
-	
-	
+
 	/* ========================== DISPLAY MEDICAL INFO ========================== */
 	// Show medical's information page
-	public String[] showMedicalInfo() {
-		String[] output = { name, manufacturer, expiryDate, cost + "", unit + "" };
+	public String[] showInfo() {
+		String[] output = { getName(), manufacturer, expiryDate, getCost() + "", unit + "" };
 		return output;
 	}
-	
+
 	// Show Medical's information page
-	public static Scene showMedicalPage(Stage primaryStage) {
+	public Scene show(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
@@ -340,7 +339,7 @@ public class Medical {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(180);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.medicals.get(i).showMedicalInfo()[j]);
+				Text text = new Text(HospitalManagement.medicals.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -356,8 +355,8 @@ public class Medical {
 		backButton.setStyle(Style.getIconButtonStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
-		// Create event handling for button to return to medicalPage
-		backButton.setOnAction(e -> primaryStage.setScene(medicalPage(primaryStage)));
+		// Create event handling for button to return to mainPage
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
@@ -391,7 +390,7 @@ public class Medical {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.medicals.get(i).showMedicalInfo()[j]);
+						Text text = new Text(HospitalManagement.medicals.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -404,7 +403,7 @@ public class Medical {
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
 				ArrayList<Medical> copyMedicals = new ArrayList<Medical>(HospitalManagement.medicals);
-				copyMedicals.sort((o1, o2) -> o1.name.compareTo(o2.name));
+				copyMedicals.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -416,7 +415,7 @@ public class Medical {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyMedicals.get(i).showMedicalInfo()[j]);
+						Text text = new Text(copyMedicals.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -442,7 +441,7 @@ public class Medical {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyMedicals.get(i).showMedicalInfo()[j]);
+						Text text = new Text(copyMedicals.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -494,11 +493,12 @@ public class Medical {
 
 		return scene;
 	}
-	
-	
-	/* ============================ REMOVE MEDICAL PAGE ============================ */
+
+	/*
+	 * ============================ REMOVE MEDICAL PAGE ============================
+	 */
 	// Prompt the user to choose the medical the he would like to remove
-	public static Scene removeMedical(Stage primaryStage) {
+	public Scene remove(Stage primaryStage) {
 
 		// Back Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -506,7 +506,7 @@ public class Medical {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(medicalPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
@@ -518,7 +518,7 @@ public class Medical {
 		// Create combo box object
 		ComboBox<String> medIdComboBox = new ComboBox<>();
 		for (int i = 0; i < HospitalManagement.medicals.size(); i++) {
-			medIdComboBox.getItems().add(HospitalManagement.medicals.get(i).name);
+			medIdComboBox.getItems().add(HospitalManagement.medicals.get(i).getName());
 		}
 		medIdComboBox.getSelectionModel().select("Select Name --");
 		medIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -563,7 +563,7 @@ public class Medical {
 			columnLabelHBox.setAlignment(Pos.CENTER);
 			columnLabelHBox.setStyle(Style.getHEADERStyle());
 			columnLabelHBox.setPrefSize(800, 50);
-			
+
 			for (int i = 0; i < 5; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(250);
@@ -575,7 +575,7 @@ public class Medical {
 
 			// Display selected Medical's information
 			for (int i = 0; i < HospitalManagement.medicals.size(); i++) {
-				if (HospitalManagement.medicals.get(i).name.equals(medIdComboBox.getValue())) {
+				if (HospitalManagement.medicals.get(i).getName().equals(medIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -588,7 +588,7 @@ public class Medical {
 					for (int j = 0; j < 5; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(250);
-						Text text = new Text(HospitalManagement.medicals.get(i).showMedicalInfo()[j]);
+						Text text = new Text(HospitalManagement.medicals.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -598,29 +598,31 @@ public class Medical {
 
 					// Check if user would like to remove the item
 					removeButton.setOnAction(e2 -> {
-						int reply = JOptionPane.showConfirmDialog(null,
-								"Are you sure you want to remove " + HospitalManagement.medicals.get(index).name + "?",
+						int reply = JOptionPane.showConfirmDialog(
+								null, "Are you sure you want to remove "
+										+ HospitalManagement.medicals.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
 							HospitalManagement.medicals.remove(index);
-							
+
 							// Remove item from database
-							if(HospitalManagement.connect && HospitalManagement.storeData) {
+							if (HospitalManagement.connect && HospitalManagement.storeData) {
 								try {
-									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+									Connection connection = DriverManager
+											.getConnection(HospitalManagement.getDatabasePath());
 									connection.createStatement().executeUpdate(
-											"DELETE FROM Medical WHERE name = '"+ medIdComboBox.getValue()+ "'");
+											"DELETE FROM Medical WHERE name = '" + medIdComboBox.getValue() + "'");
 								} catch (SQLException e1) {
 									// Exception Catch
 									e1.printStackTrace();
 								}
 							}
-							
+
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
-							
+
 							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
@@ -628,7 +630,7 @@ public class Medical {
 							if (reply2 == JOptionPane.YES_OPTION) {
 								primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 							} else {
-								primaryStage.setScene(medicalPage(primaryStage));
+								primaryStage.setScene(mainPage(primaryStage));
 							}
 						}
 					});
@@ -636,7 +638,7 @@ public class Medical {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
-		
+
 		// Create VBox to limit the position of information
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(210);
@@ -663,7 +665,6 @@ public class Medical {
 		Scene scene = new Scene(borderPane, 1344, 756);
 		return scene;
 	}
-	
 
 	/* ============================ INPUT VALIDATIOn ============================ */
 	private boolean medicalValidation(TextField[] textField, String[] inputArray, ArrayList<Medical> arrayList) {
@@ -671,7 +672,7 @@ public class Medical {
 		// Check empty input
 		for (int i = 0; i < inputArray.length; i++) {
 			if (inputArray[i].isEmpty()) {
-				errorMsg = "Input cannot be empty.";
+				setErrorMsg("Input cannot be empty.");
 				return false;
 			}
 		}
@@ -681,21 +682,17 @@ public class Medical {
 			Integer.parseInt(inputArray[2]);
 			if (Integer.parseInt(inputArray[2]) <= 0) {
 				textField[2].clear();
-				errorMsg = "Cost must be a positive number without any spacing.";
+				setErrorMsg("Cost must be a positive number without any spacing.");
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textField[2].clear();
-			this.errorMsg = "Cost must be a positive number without any spacing.";
+			setErrorMsg("Cost must be a positive number without any spacing.");
 			return false;
 		}
 
 		return true;
 	}
 
-	// Getter
-	public String getErrorMsg() {
-		return errorMsg;
-	}
 }

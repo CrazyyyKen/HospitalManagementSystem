@@ -30,25 +30,23 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
-public class Doctor {
+public class Doctor extends Role implements PageManager {
 
 	// Data fields
-	private String id;
-	private String name;
 	private String specialist;
 	private String workTime;
 	private String qualification;
 	private int room;
-	private String errorMsg; // Only used for input validation
 
 	// Default constructor
 	public Doctor() {
+		super();
 	}
 
 	// Constructor
 	public Doctor(String id, String name, String specialist, String workTime, String qualification, int room) {
-		this.id = id;
-		this.name = name;
+		setId(id);
+		setName(name);
 		this.specialist = specialist;
 		this.workTime = workTime;
 		this.qualification = qualification;
@@ -56,7 +54,8 @@ public class Doctor {
 	}
 
 	/* ============================ DOCTOR MAIN PAGE ============================ */
-	public static Scene doctorPage(Stage primaryStage) {
+	@Override
+	public Scene mainPage(Stage primaryStage) {
 
 		// Add New Doctor Button
 		ImageView addIcon = new ImageView(new Image("/resources/add.png"));
@@ -91,35 +90,35 @@ public class Doctor {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
 		// Create event handling for buttons
 
-		// Call newDoctor method
+		// Call add method
 		addButton.setOnAction(e -> {
 			Doctor doctor = new Doctor();
-			primaryStage.setScene(doctor.newDoctor(primaryStage));
+			primaryStage.setScene(doctor.add(primaryStage));
 		});
 
-		// Call showDoctorPage method
+		// Call show method
 		displayButton.setOnAction(e -> {
 			if (HospitalManagement.doctors.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Doctor's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(showDoctorPage(primaryStage));
+				primaryStage.setScene(show(primaryStage));
 			}
 		});
 
-		// Call removeDoctor method
+		// Call remove method
 		removeButton.setOnAction(e -> {
 			if (HospitalManagement.doctors.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Doctor's record is empty!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(removeDoctor(primaryStage));
+				primaryStage.setScene(remove(primaryStage));
 			}
 		});
 
@@ -150,7 +149,7 @@ public class Doctor {
 
 	/* ============================ ADD DOCTOR ============================ */
 	// Prompts user to enter new information of doctor
-	public Scene newDoctor(Stage primaryStage) {
+	public Scene add(Stage primaryStage) {
 
 		// Create BACK button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -158,7 +157,7 @@ public class Doctor {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(100);
 
@@ -243,11 +242,11 @@ public class Doctor {
 			String[] inputArray = { idInput, nameInput, qualificationInput, roomInput };
 
 			// Validate user inputs
-			if (doctorValidation(textFieldArray, inputArray, HospitalManagement.doctors)) {
+			if (validation(textFieldArray, inputArray, HospitalManagement.doctors)) {
 
 				// Assign value to doctor object's data fields
-				id = String.format("%03d", Integer.parseInt(idInput));
-				name = "Dr. " + nameInput;
+				setId(String.format("%03d", Integer.parseInt(idInput)));
+				setName("Dr. " + nameInput);
 				specialist = specialistInput;
 				workTime = workTimeInput;
 				qualification = qualificationInput;
@@ -261,8 +260,8 @@ public class Doctor {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
 						connection.createStatement()
-								.executeUpdate("insert into Doctor values('" + id + "', '" + name + "', '" + specialist
-										+ "', '" + workTime + "', '" + qualification + "', " + room + ")");
+								.executeUpdate("insert into Doctor values('" + getId() + "', '" + getName() + "', '"
+										+ specialist + "', '" + workTime + "', '" + qualification + "', " + room + ")");
 						connection.close();
 					} catch (SQLException e1) {
 						// Exception Catch
@@ -280,7 +279,7 @@ public class Doctor {
 				if (reply == JOptionPane.YES_OPTION) {
 					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 				} else {
-					primaryStage.setScene(doctorPage(primaryStage));
+					primaryStage.setScene(mainPage(primaryStage));
 				}
 
 			} else {
@@ -332,14 +331,14 @@ public class Doctor {
 	}
 
 	// Shows the information of doctor
-	public String[] showDoctorInfo() {
-		String[] output = { id, name, specialist, workTime, qualification, room + "" };
+	public String[] showInfo() {
+		String[] output = { getId(), getName(), specialist, workTime, qualification, room + "" };
 		return output;
 	}
 
 	/* ========================== DISPLAY DOCTOR INFO ========================== */
 	// Show doctor's information page
-	public static Scene showDoctorPage(Stage primaryStage) {
+	public Scene show(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
@@ -374,7 +373,7 @@ public class Doctor {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(160);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+				Text text = new Text(HospitalManagement.doctors.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -392,7 +391,7 @@ public class Doctor {
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
 
 		// Create event handling for Back button to return to doctor main page
-		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
@@ -427,7 +426,7 @@ public class Doctor {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+						Text text = new Text(HospitalManagement.doctors.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -441,7 +440,7 @@ public class Doctor {
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
 				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
-				copyDoctors.sort((o1, o2) -> o1.id.compareTo(o2.id));
+				copyDoctors.sort((o1, o2) -> o1.getId().compareTo(o2.getId()));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -453,7 +452,7 @@ public class Doctor {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
+						Text text = new Text(copyDoctors.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -467,7 +466,7 @@ public class Doctor {
 			else {
 				// Make a copy of ArrayList
 				ArrayList<Doctor> copyDoctors = new ArrayList<Doctor>(HospitalManagement.doctors);
-				copyDoctors.sort((o1, o2) -> o1.name.compareTo(o2.name));
+				copyDoctors.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -479,7 +478,7 @@ public class Doctor {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyDoctors.get(i).showDoctorInfo()[j]);
+						Text text = new Text(copyDoctors.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -509,7 +508,7 @@ public class Doctor {
 		rightLimit.setPrefWidth(180);
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(180);
-		
+
 		// Create borderpane to hold all pane
 		BorderPane borderPane = new BorderPane();
 		borderPane.setCenter(scrollPane);
@@ -533,9 +532,11 @@ public class Doctor {
 		return scene;
 	}
 
-	/* ============================ REMOVE DOCTOR PAGE ============================ */
+	/*
+	 * ============================ REMOVE DOCTOR PAGE ============================
+	 */
 	// Prompt the user to choose the doctor the he would like to remove
-	public static Scene removeDoctor(Stage primaryStage) {
+	public Scene remove(Stage primaryStage) {
 
 		// Create Back Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -543,7 +544,7 @@ public class Doctor {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(doctorPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 
 		// HBox to hold Back button
 		HBox BtnHbox = new HBox();
@@ -557,7 +558,7 @@ public class Doctor {
 		// Create combo box object for choosing id
 		ComboBox<String> doctorIdComboBox = new ComboBox<>();
 		for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
-			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).id);
+			doctorIdComboBox.getItems().add(HospitalManagement.doctors.get(i).getId());
 		}
 		doctorIdComboBox.getSelectionModel().select("Select ID --");
 		doctorIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -614,7 +615,7 @@ public class Doctor {
 
 			// Display selected doctor's information
 			for (int i = 0; i < HospitalManagement.doctors.size(); i++) {
-				if (HospitalManagement.doctors.get(i).id.equals(doctorIdComboBox.getValue())) {
+				if (HospitalManagement.doctors.get(i).getId().equals(doctorIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -627,7 +628,7 @@ public class Doctor {
 					for (int j = 0; j < 6; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
-						Text text = new Text(HospitalManagement.doctors.get(i).showDoctorInfo()[j]);
+						Text text = new Text(HospitalManagement.doctors.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -637,14 +638,14 @@ public class Doctor {
 
 					// Check if user would like to remove the item
 					removeButton.setOnAction(e2 -> {
-						int reply = JOptionPane.showConfirmDialog(null,
-								"Are you sure you want to remove " + HospitalManagement.doctors.get(index).name + "?",
+						int reply = JOptionPane.showConfirmDialog(
+								null, "Are you sure you want to remove "
+										+ HospitalManagement.doctors.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
 							HospitalManagement.doctors.remove(index);
-
 
 							// Remove item from database
 							if (HospitalManagement.connect && HospitalManagement.storeData) {
@@ -657,7 +658,7 @@ public class Doctor {
 									// Exception Catch
 									e1.printStackTrace();
 								}
-							}							
+							}
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
 
@@ -668,7 +669,7 @@ public class Doctor {
 							if (reply2 == JOptionPane.YES_OPTION) {
 								primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 							} else {
-								primaryStage.setScene(doctorPage(primaryStage));
+								primaryStage.setScene(mainPage(primaryStage));
 							}
 						}
 					});
@@ -705,7 +706,7 @@ public class Doctor {
 	}
 
 	/* ============================ INPUT VALIDATIOn ============================ */
-	private boolean doctorValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Doctor> arrayList) {
+	private boolean validation(TextField[] textFieldArray, String[] inputArray, ArrayList<Doctor> arrayList) {
 
 		// Initialization of data fields
 		String idInput = inputArray[0];
@@ -714,20 +715,20 @@ public class Doctor {
 		// Check empty input
 		for (int i = 0; i < inputArray.length; i++) {
 			if (inputArray[i].isEmpty()) {
-				errorMsg = "Input cannot be empty.";
+				setErrorMsg("Input cannot be empty.");
 				return false;
 			}
 		}
 		// Check if ID overflow
 		if (idInput.length() > 4) {
 			textFieldArray[0].clear();
-			errorMsg = "ID must be a non-negative number less than 10000.";
+			setErrorMsg("ID must be a non-negative number less than 10000.");
 			return false;
 		}
 		// Check if Room Number overflow
 		if (roomInput.length() > 4) {
 			textFieldArray[3].clear();
-			errorMsg = "Room number must be a non-negative number less than 10000.";
+			setErrorMsg("Room number must be a non-negative number less than 10000.");
 			return false;
 		}
 
@@ -735,14 +736,14 @@ public class Doctor {
 		try {
 			Integer.parseInt(idInput);
 			if (Integer.parseInt(idInput) <= 0) {
-				textFieldArray[3].clear();
-				errorMsg = "ID must be a non-negative number without any spacing.";
+				textFieldArray[0].clear();
+				setErrorMsg("ID must be a non-negative number without any spacing.");
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textFieldArray[0].clear();
-			errorMsg = "ID must be a non-negative number without any spacing.";
+			setErrorMsg("ID must be a non-negative number without any spacing.");
 			return false;
 		}
 
@@ -751,37 +752,32 @@ public class Doctor {
 			Integer.parseInt(roomInput);
 			if (Integer.parseInt(roomInput) <= 0) {
 				textFieldArray[3].clear();
-				errorMsg = "Room number must be a non-negative number without any spacing.";
+				setErrorMsg("Room number must be a non-negative number without any spacing.");
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textFieldArray[3].clear();
-			errorMsg = "Room number must be a non-negative number without any spacing.";
+			setErrorMsg("Room number must be a non-negative number without any spacing.");
 			return false;
 		}
 
 		// Check if ID and room number is duplicated or not
 		for (int i = 0; i < arrayList.size(); i++) {
-			if (arrayList.get(i).id.equals(String.format("%03d", Integer.parseInt(idInput)))) {
+			if (arrayList.get(i).getId().equals(String.format("%03d", Integer.parseInt(idInput)))) {
 				textFieldArray[0].clear();
-				errorMsg = "ID already exists in record.";
+				setErrorMsg("ID already exists in record.");
 				return false;
 			}
 			if (Integer.toString(arrayList.get(i).room).equals(inputArray[3])) {
 				textFieldArray[3].clear();
-				errorMsg = "This room is occupied.";
+				setErrorMsg("This room is occupied.");
 				return false;
 			}
 		}
 
 		return true;
 
-	}
-
-	// Getter
-	public String getErrorMsg() {
-		return errorMsg;
 	}
 
 }

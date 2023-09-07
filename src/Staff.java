@@ -32,31 +32,29 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
-public class Staff {
+public class Staff extends Role implements PageManager {
 
 	// Data fields
-	private String id;
-	private String name;
 	private String designation;
 	private String sex;
 	private int salary;
-	private String errorMsg;
 
 	// Default constructor
 	public Staff() {
+		super();
 	}
 
 	// Constructor
 	public Staff(String id, String name, String designation, String sex, int salary) {
-		this.id = id;
-		this.name = name;
+		setId(id);
+		setName(name);
 		this.designation = designation;
 		this.sex = sex;
 		this.salary = salary;
 	}
 
 	/* ============================ STAFF MAIN PAGE ============================ */
-	public static Scene staffPage(Stage primaryStage) {
+	public Scene mainPage(Stage primaryStage) {
 
 		// Add New Staff Button
 		ImageView addIcon = new ImageView(new Image("/resources/add.png"));
@@ -75,7 +73,7 @@ public class Staff {
 		displayButton.setStyle(Style.getIconButtonStyle());
 		displayButton.setOnMouseEntered(e -> displayButton.setStyle(Style.getHoveredIconButtonStyle()));
 		displayButton.setOnMouseExited(e -> displayButton.setStyle(Style.getIconButtonStyle()));
-		
+
 		// Remove Doctor Button
 		ImageView removeIcon = new ImageView(new Image("/resources/delete.png"));
 		Button removeButton = new Button("   Remove Staff", removeIcon);
@@ -91,7 +89,7 @@ public class Staff {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(staffPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
@@ -106,29 +104,27 @@ public class Staff {
 
 		// Create event handling for buttons
 
-		// Call newStaff method
+		// Call add method
 		addButton.setOnAction(e -> {
 			Staff staff = new Staff();
-			primaryStage.setScene(staff.newStaff(primaryStage));
+			primaryStage.setScene(staff.add(primaryStage));
 		});
 
-		// Call showStaffPage method
+		// Call show method
 		displayButton.setOnAction(e -> {
 			if (HospitalManagement.staffs.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Staff's record is empty!", "Warning",
-						JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Staff's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(showStaffPage(primaryStage));
+				primaryStage.setScene(show(primaryStage));
 			}
 		});
 
 		// Call removeDoctor method
 		removeButton.setOnAction(e -> {
 			if (HospitalManagement.staffs.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Staff's record is empty!", "Warning",
-						JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Staff's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(removeStaff(primaryStage));
+				primaryStage.setScene(remove(primaryStage));
 			}
 		});
 
@@ -150,15 +146,15 @@ public class Staff {
 
 	/* ============================ ADD STAFF ============================ */
 	// Prompts user to enter new information of Staff
-	public Scene newStaff(Stage primaryStage) {
-		
+	public Scene add(Stage primaryStage) {
+
 		// Create back button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
 		Button backButton = new Button("  Back", backIcon);
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(staffPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(190);
 		backButton.setLayoutY(100);
 
@@ -217,33 +213,32 @@ public class Staff {
 			String salaryInput = salaryTextField.getText();
 			String designationInput = designationComboBox.getValue();
 			String sexInput = sexComboBox.getValue();
-			
+
 			// Combine text field into TextField array
-			TextField[] textFieldArray = {idTextField, nameTextField, salaryTextField};
-			
+			TextField[] textFieldArray = { idTextField, nameTextField, salaryTextField };
+
 			// Combine String input into an array
-			String[] inputArray = {idInput, nameInput, salaryInput, designationInput,sexInput};
-			
+			String[] inputArray = { idInput, nameInput, salaryInput, designationInput, sexInput };
+
 			// Validate user input
-			if(staffValidation(textFieldArray, inputArray, HospitalManagement.staffs)) {
-				
+			if (validation(textFieldArray, inputArray, HospitalManagement.staffs)) {
+
 				// Assign values to Staff's data field
-				id = String.format("%03d", Integer.parseInt(idInput));
-				name = nameInput;
+				setId(String.format("%03d", Integer.parseInt(idInput)));
+				setName(nameInput);
 				designation = designationInput;
 				sex = sexInput;
 				salary = Integer.parseInt(salaryInput);
-				
-				
+
 				// Add Staff object to ArrayList
 				HospitalManagement.staffs.add(this);
-				
+
 				// Add Staff to Database
-				if(HospitalManagement.connect && HospitalManagement.storeData) {
+				if (HospitalManagement.connect && HospitalManagement.storeData) {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate(
-								"insert into Staff values('" + id + "', '"+ name + "', '"+ designation + "', '"+ sex + "', "+  salary + ")");
+						connection.createStatement().executeUpdate("insert into Staff values('" + getId() + "', '"
+								+ getName() + "', '" + designation + "', '" + sex + "', " + salary + ")");
 						connection.close();
 					} catch (SQLException e1) {
 						// Exception Catch
@@ -260,7 +255,7 @@ public class Staff {
 				if (reply == JOptionPane.YES_OPTION) {
 					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 				} else {
-					primaryStage.setScene(staffPage(primaryStage));
+					primaryStage.setScene(mainPage(primaryStage));
 				}
 
 			} else {
@@ -304,16 +299,16 @@ public class Staff {
 		return scene;
 
 	}
-	
+
 	// Shows the information of Staff
-	public String[] showStaffInfo() {
-		String[] output = { id, name, designation, sex, salary + "" };
+	public String[] showInfo() {
+		String[] output = { getId(), getName(), designation, sex, salary + "" };
 		return output;
 	}
-	
+
 	/* ========================== DISPLAY STAFF INFO ========================== */
 	// Show Staff's information page
-	public static Scene showStaffPage(Stage primaryStage) {
+	public Scene show(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
@@ -347,7 +342,7 @@ public class Staff {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(180);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.staffs.get(i).showStaffInfo()[j]);
+				Text text = new Text(HospitalManagement.staffs.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -363,9 +358,9 @@ public class Staff {
 		backButton.setStyle(Style.getIconButtonStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
-		
+
 		// Create event handling for button to return to Staff page
-		backButton.setOnAction(e -> primaryStage.setScene(staffPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
@@ -399,7 +394,7 @@ public class Staff {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.staffs.get(i).showStaffInfo()[j]);
+						Text text = new Text(HospitalManagement.staffs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -412,7 +407,7 @@ public class Staff {
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
 				ArrayList<Staff> copyStaffs = new ArrayList<Staff>(HospitalManagement.staffs);
-				copyStaffs.sort((o1, o2) -> o1.id.compareTo(o2.id));
+				copyStaffs.sort((o1, o2) -> o1.getId().compareTo(o2.getId()));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -424,7 +419,7 @@ public class Staff {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyStaffs.get(i).showStaffInfo()[j]);
+						Text text = new Text(copyStaffs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -438,7 +433,7 @@ public class Staff {
 			else {
 				// Make a copy of ArrayList
 				ArrayList<Staff> copyStaffs = new ArrayList<Staff>(HospitalManagement.staffs);
-				copyStaffs.sort((o1, o2) -> o1.name.compareTo(o2.name));
+				copyStaffs.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -450,7 +445,7 @@ public class Staff {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(180);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyStaffs.get(i).showStaffInfo()[j]);
+						Text text = new Text(copyStaffs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -480,7 +475,7 @@ public class Staff {
 		rightLimit.setPrefWidth(180);
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(180);
-		
+
 		// Create borderpane to hold all pane
 		BorderPane borderPane = new BorderPane();
 		borderPane.setCenter(scrollPane);
@@ -503,11 +498,12 @@ public class Staff {
 
 		return scene;
 	}
-	
-	
-	/* ============================ REMOVE STAFF PAGE ============================ */
+
+	/*
+	 * ============================ REMOVE STAFF PAGE ============================
+	 */
 	// Prompt the user to choose the staff the he would like to remove
-	public static Scene removeStaff(Stage primaryStage) {
+	public Scene remove(Stage primaryStage) {
 
 		// Back Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -515,7 +511,7 @@ public class Staff {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(staffPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
@@ -527,7 +523,7 @@ public class Staff {
 		// Create combo box object
 		ComboBox<String> staffIdComboBox = new ComboBox<>();
 		for (int i = 0; i < HospitalManagement.staffs.size(); i++) {
-			staffIdComboBox.getItems().add(HospitalManagement.staffs.get(i).id);
+			staffIdComboBox.getItems().add(HospitalManagement.staffs.get(i).getId());
 		}
 		staffIdComboBox.getSelectionModel().select("Select ID --");
 		staffIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -567,12 +563,12 @@ public class Staff {
 			infoVBox.setAlignment(Pos.CENTER);
 
 			// Create HBox object for column label
-			String[] columnLabel = { "ID", "Name", "Designation", "Sex", "Salary"  };
+			String[] columnLabel = { "ID", "Name", "Designation", "Sex", "Salary" };
 			HBox columnLabelHBox = new HBox(10);
 			columnLabelHBox.setAlignment(Pos.CENTER);
 			columnLabelHBox.setStyle(Style.getHEADERStyle());
 			columnLabelHBox.setPrefSize(800, 50);
-			
+
 			for (int i = 0; i < 5; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(150);
@@ -584,7 +580,7 @@ public class Staff {
 
 			// Display selected Staff's information
 			for (int i = 0; i < HospitalManagement.staffs.size(); i++) {
-				if (HospitalManagement.staffs.get(i).id.equals(staffIdComboBox.getValue())) {
+				if (HospitalManagement.staffs.get(i).getId().equals(staffIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -597,7 +593,7 @@ public class Staff {
 					for (int j = 0; j < 5; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(150);
-						Text text = new Text(HospitalManagement.staffs.get(i).showStaffInfo()[j]);
+						Text text = new Text(HospitalManagement.staffs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -607,35 +603,37 @@ public class Staff {
 
 					// Check if user would like to remove the item
 					removeButton.setOnAction(e2 -> {
-						int reply = JOptionPane.showConfirmDialog(null,
-								"Are you sure you want to remove " + HospitalManagement.staffs.get(index).name + "?",
+						int reply = JOptionPane.showConfirmDialog(
+								null, "Are you sure you want to remove "
+										+ HospitalManagement.staffs.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
 							HospitalManagement.staffs.remove(index);
-							
+
 							// Remove item from database
-							if(HospitalManagement.connect && HospitalManagement.storeData) {
+							if (HospitalManagement.connect && HospitalManagement.storeData) {
 								try {
-									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+									Connection connection = DriverManager
+											.getConnection(HospitalManagement.getDatabasePath());
 									connection.createStatement().executeUpdate(
-											"DELETE FROM Staff WHERE id = "+staffIdComboBox.getValue());
+											"DELETE FROM Staff WHERE id = " + staffIdComboBox.getValue());
 								} catch (SQLException e1) {
 									e1.printStackTrace();
 								}
 							}
-							
+
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
-							
+
 							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
 							if (reply2 == JOptionPane.YES_OPTION) {
 								primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 							} else {
-								primaryStage.setScene(staffPage(primaryStage));
+								primaryStage.setScene(mainPage(primaryStage));
 							}
 						}
 					});
@@ -643,7 +641,7 @@ public class Staff {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
-		
+
 		// Create VBox to limit the position of information
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(210);
@@ -662,7 +660,7 @@ public class Staff {
 
 		// Set Background image
 		borderPane.setBackground(
-				new Background(new BackgroundImage(new Image("/resources/removeStaff.png"), BackgroundRepeat.REPEAT,
+				new Background(new BackgroundImage(new Image("/resources/remove.png"), BackgroundRepeat.REPEAT,
 						BackgroundRepeat.NO_REPEAT, new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
 						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true))));
 
@@ -671,68 +669,63 @@ public class Staff {
 		return scene;
 	}
 
-
 	/* ============================ INPUT VALIDATIOn ============================ */
-	private boolean staffValidation(TextField[] textFieldArray, String[] inputArray, ArrayList<Staff> arrayList) {
-		
+	private boolean validation(TextField[] textFieldArray, String[] inputArray, ArrayList<Staff> arrayList) {
+
 		// Check for empty input
 		for (int i = 0; i < inputArray.length; i++) {
 			if (inputArray[i].isEmpty()) {
-				errorMsg = "Input cannot be empty.";
+				setErrorMsg("Input cannot be empty.");
 				return false;
 			}
 		}
-		
+
 		// Check if ID overflow
 		if (inputArray[0].length() > 4) {
 			textFieldArray[0].clear();
-			errorMsg = "ID must be a non-negative number less than 10000.";
+			setErrorMsg("ID must be a non-negative number less than 10000.");
 			return false;
 		}
-		
+
 		// Check if ID consists of positive numbers only or not
 		try {
 			Integer.parseInt(inputArray[0]);
 			if (Integer.parseInt(inputArray[0]) <= 0) {
 				textFieldArray[0].clear();
-				this.errorMsg = "ID must be a positive number without any spacing.";
+				setErrorMsg("ID must be a positive number without any spacing.");
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textFieldArray[0].clear();
-			this.errorMsg = "ID must be a positive number without any spacing.";
+			setErrorMsg("ID must be a positive number without any spacing.");
 			return false;
 		}
-		
+
 		// Check if salary contains non-number value or negative number
 		try {
 			Integer.parseInt(inputArray[2]);
 			if (Integer.parseInt(inputArray[2]) <= 0) {
 				textFieldArray[2].clear();
-				errorMsg = "Salary must be a positive number without any spacing.";
+				setErrorMsg("Salary must be a positive number without any spacing.");
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			textFieldArray[2].clear();
-			this.errorMsg = "Salary must be a positive number without any spacing.";
+			setErrorMsg("Salary must be a positive number without any spacing.");
 			return false;
 		}
-		
+
 		// Check if ID is duplicated
 		for (int i = 0; i < arrayList.size(); i++) {
-			if (arrayList.get(i).id.equals(String.format("%03d", Integer.parseInt(inputArray[0])))) {
+			if (arrayList.get(i).getId().equals(String.format("%03d", Integer.parseInt(inputArray[0])))) {
 				textFieldArray[0].clear();
-				this.errorMsg = "ID already exists in record.";
+				setErrorMsg("ID already exists in record.");
 				return false;
 			}
 		}
 		return true;
 	}
-	
-	// Getter
-	public String getErrorMsg() {
-		return errorMsg;
-	}
+
 }

@@ -33,21 +33,19 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import resources.Style;
 
-public class Lab {
-	private String lab;
-	private int cost;
-	private String errorMsg; // Only used for input validation
+public class Lab extends Property implements PageManager {
 
 	public Lab() {
+		super();
 	};
 
-	public Lab(String lab, int cost) {
-		this.lab = lab;
-		this.cost = cost;
+	public Lab(String name, int cost) {
+		setName(name);
+		setCost(cost);
 	}
 
 	/* ============================ LAB MAIN PAGE ============================ */
-	public static Scene labPage(Stage primaryStage) {
+	public Scene mainPage(Stage primaryStage) {
 
 		// Add New Lab Button
 		ImageView addIcon = new ImageView(new Image("/resources/add.png"));
@@ -82,7 +80,7 @@ public class Lab {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(labPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
@@ -97,27 +95,27 @@ public class Lab {
 
 		// Create event handling for buttons
 
-		// Call newLab method
+		// Call add method
 		addButton.setOnAction(e -> {
 			Lab Lab = new Lab();
-			primaryStage.setScene(Lab.newLab(primaryStage));
+			primaryStage.setScene(Lab.add(primaryStage));
 		});
 
-		// Call showLabPage method
+		// Call show method
 		displayButton.setOnAction(e -> {
 			if (HospitalManagement.laboratories.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Lab's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(showLabPage(primaryStage));
+				primaryStage.setScene(show(primaryStage));
 			}
 		});
 
-		// Call removeLab method
+		// Call remove method
 		removeButton.setOnAction(e -> {
 			if (HospitalManagement.laboratories.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Lab's record is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
 			} else {
-				primaryStage.setScene(removeLab(primaryStage));
+				primaryStage.setScene(remove(primaryStage));
 			}
 		});
 
@@ -138,7 +136,7 @@ public class Lab {
 
 	/* ============================ ADD LAB ============================ */
 	// Prompts user to enter new information of LAB
-	public Scene newLab(Stage primaryStage) {
+	public Scene add(Stage primaryStage) {
 
 		// Create button object
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -146,7 +144,7 @@ public class Lab {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(labPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(100);
 
@@ -178,22 +176,22 @@ public class Lab {
 			// Initialization of data field
 			String labNameInput = nameTextField.getText();
 			String costInput = costTextField.getText();
-			
+
 			// Validate user input
-			if(labValidation(nameTextField, costTextField, labNameInput, costInput, HospitalManagement.laboratories)) {
+			if (validation(nameTextField, costTextField, labNameInput, costInput, HospitalManagement.laboratories)) {
 				// Assign value to facility object's data field
-				lab = labNameInput;
-				cost = Integer.parseInt(costInput);
-			
+				setName(labNameInput);
+				setCost(Integer.parseInt(costInput));
+
 				// Add facility object to ArrayList
 				HospitalManagement.laboratories.add(this);
-				
+
 				// Add Lab to Database
-				if(HospitalManagement.connect && HospitalManagement.storeData) {
+				if (HospitalManagement.connect && HospitalManagement.storeData) {
 					try {
 						Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
-						connection.createStatement().executeUpdate(
-								"insert into Lab values('" + lab + "', " +  cost + ")");
+						connection.createStatement()
+								.executeUpdate("insert into Lab values('" + getName() + "', " + getCost() + ")");
 						connection.close();
 					} catch (SQLException e1) {
 						// Exception Catch
@@ -201,18 +199,17 @@ public class Lab {
 					}
 				}
 				JOptionPane.showMessageDialog(null, "Successfully added!", "Message", JOptionPane.INFORMATION_MESSAGE);
-				
+
 				// Check if user would like to return to previous section or return to main menu
 				int reply = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 						JOptionPane.YES_NO_OPTION);
-	
+
 				if (reply == JOptionPane.YES_OPTION) {
 					primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 				} else {
-					primaryStage.setScene(labPage(primaryStage));
+					primaryStage.setScene(mainPage(primaryStage));
 				}
-			}
-			else {
+			} else {
 				// Show warning message when user enter wrong inputs
 				JOptionPane.showMessageDialog(null, getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
 			}
@@ -233,7 +230,6 @@ public class Lab {
 		grid.add(nameTextField, 1, 0);
 		grid.add(costTextField, 1, 1);
 
-
 		// Create pane object
 		Pane pane = new Pane();
 		pane.getChildren().addAll(grid, addButton, backButton);
@@ -251,21 +247,21 @@ public class Lab {
 	}
 
 	// Shows the information of Lab
-	public String[] showLabInfo() {
-		String[] output = { lab, cost + "" };
+	public String[] showInfo() {
+		String[] output = { getName(), getCost() + "" };
 		return output;
 	}
-	
+
 	/* ========================== DISPLAY LAB INFO ========================== */
 	// Show lab's information page
-	public static Scene showLabPage(Stage primaryStage) {
+	public Scene show(Stage primaryStage) {
 
 		// Create VBox object
 		VBox vBox = new VBox(15);
 		vBox.setAlignment(Pos.CENTER);
 
 		// Create HBox object for column label
-		String[] columnLabel = { "Lab", "Cost"};
+		String[] columnLabel = { "Lab", "Cost" };
 		HBox columnLabelHBox = new HBox(10);
 		columnLabelHBox.setStyle(Style.getHEADERStyle());
 		columnLabelHBox.setPrefHeight(50);
@@ -292,7 +288,7 @@ public class Lab {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(200);
 				stackPane.setPrefHeight(15);
-				Text text = new Text(HospitalManagement.laboratories.get(i).showLabInfo()[j]);
+				Text text = new Text(HospitalManagement.laboratories.get(i).showInfo()[j]);
 				text.setStyle(Style.getTextStyle());
 				stackPane.getChildren().add(text);
 				hBox.getChildren().add(stackPane);
@@ -309,13 +305,13 @@ public class Lab {
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconButtonStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconButtonStyle()));
 		// Create event handling for button
-		// Call LabPage
-		backButton.setOnAction(e -> primaryStage.setScene(labPage(primaryStage)));
+		// Call mainPage
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox HBtn = new HBox();
 		HBtn.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(20));
 		HBtn.setAlignment(Pos.CENTER);
-		
+
 		/* ============================ SORTING FUNCTION ============================ */
 		// Create combo box objects for sort function
 		String[] sortArray = { "Sort By Default", "Sort by Name", "Sort by Cost" };
@@ -344,7 +340,7 @@ public class Lab {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(200);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(HospitalManagement.laboratories.get(i).showLabInfo()[j]);
+						Text text = new Text(HospitalManagement.laboratories.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -357,7 +353,7 @@ public class Lab {
 			else if (sortArray[1].equals(sortComboBox.getValue())) {
 				// Make a copy of ArrayList
 				ArrayList<Lab> copyLabs = new ArrayList<Lab>(HospitalManagement.laboratories);
-				copyLabs.sort((o1, o2) -> o1.lab.compareTo(o2.lab));
+				copyLabs.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -369,7 +365,7 @@ public class Lab {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(200);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyLabs.get(i).showLabInfo()[j]);
+						Text text = new Text(copyLabs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -383,7 +379,7 @@ public class Lab {
 			else {
 				// Make a copy of ArrayList
 				ArrayList<Lab> copyLabs = new ArrayList<Lab>(HospitalManagement.laboratories);
-				copyLabs.sort((o1, o2) -> Integer.toString(o1.cost).compareTo(Integer.toString(o2.cost)));
+				copyLabs.sort((o1, o2) -> Integer.toString(o1.getCost()).compareTo(Integer.toString(o2.getCost())));
 
 				vBox.getChildren().clear();
 				vBox.getChildren().addAll(columnLabelHBox);
@@ -395,7 +391,7 @@ public class Lab {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(200);
 						stackPane.setPrefHeight(15);
-						Text text = new Text(copyLabs.get(i).showLabInfo()[j]);
+						Text text = new Text(copyLabs.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						hBox.getChildren().add(stackPane);
@@ -447,10 +443,10 @@ public class Lab {
 
 		return scene;
 	}
-	
+
 	/* ============================ REMOVE LAB PAGE ============================ */
 	// Prompt the user to choose the LAB the he would like to remove
-	public static Scene removeLab(Stage primaryStage) {
+	public Scene remove(Stage primaryStage) {
 
 		// Back Button
 		ImageView backIcon = new ImageView(new Image("/resources/backBtn2.png"));
@@ -458,7 +454,7 @@ public class Lab {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(labPage(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
 		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
@@ -470,7 +466,7 @@ public class Lab {
 		// Create combo box object
 		ComboBox<String> LabIdComboBox = new ComboBox<>();
 		for (int i = 0; i < HospitalManagement.laboratories.size(); i++) {
-			LabIdComboBox.getItems().add(HospitalManagement.laboratories.get(i).lab);
+			LabIdComboBox.getItems().add(HospitalManagement.laboratories.get(i).getName());
 		}
 		LabIdComboBox.getSelectionModel().select("Select Lab --");
 		LabIdComboBox.setStyle(Style.getComboBoxStyle());
@@ -515,7 +511,7 @@ public class Lab {
 			columnLabelHBox.setAlignment(Pos.CENTER);
 			columnLabelHBox.setStyle(Style.getHEADERStyle());
 			columnLabelHBox.setPrefSize(800, 50);
-			
+
 			for (int i = 0; i < 2; i++) {
 				StackPane stackPane = new StackPane();
 				stackPane.setPrefWidth(250);
@@ -527,7 +523,7 @@ public class Lab {
 
 			// Display selected Lab's information
 			for (int i = 0; i < HospitalManagement.laboratories.size(); i++) {
-				if (HospitalManagement.laboratories.get(i).lab.equals(LabIdComboBox.getValue())) {
+				if (HospitalManagement.laboratories.get(i).getName().equals(LabIdComboBox.getValue())) {
 
 					int index = i;
 
@@ -540,7 +536,7 @@ public class Lab {
 					for (int j = 0; j < 2; j++) {
 						StackPane stackPane = new StackPane();
 						stackPane.setPrefWidth(250);
-						Text text = new Text(HospitalManagement.laboratories.get(i).showLabInfo()[j]);
+						Text text = new Text(HospitalManagement.laboratories.get(i).showInfo()[j]);
 						text.setStyle(Style.getTextStyle());
 						stackPane.getChildren().add(text);
 						infoHBox.getChildren().add(stackPane);
@@ -551,28 +547,30 @@ public class Lab {
 					// Check if user would like to remove the item
 					removeButton.setOnAction(e2 -> {
 						int reply = JOptionPane.showConfirmDialog(null,
-								"Are you sure you want to remove " + HospitalManagement.laboratories.get(index).lab + "?",
+								"Are you sure you want to remove "
+										+ HospitalManagement.laboratories.get(index).getName() + "?",
 								"Select an Option", JOptionPane.YES_NO_OPTION);
 
 						if (reply == JOptionPane.YES_OPTION) {
 							// Remove item from array list
 							HospitalManagement.laboratories.remove(index);
-							
+
 							// Remove item from database
-							if(HospitalManagement.connect && HospitalManagement.storeData) {
+							if (HospitalManagement.connect && HospitalManagement.storeData) {
 								try {
-									Connection connection = DriverManager.getConnection(HospitalManagement.getDatabasePath());
+									Connection connection = DriverManager
+											.getConnection(HospitalManagement.getDatabasePath());
 									connection.createStatement().executeUpdate(
-											"DELETE FROM Lab WHERE lab = '"+LabIdComboBox.getValue()+ "'");
+											"DELETE FROM Lab WHERE lab = '" + LabIdComboBox.getValue() + "'");
 								} catch (SQLException e1) {
 									// Exception Catch
 									e1.printStackTrace();
 								}
 							}
-							
+
 							JOptionPane.showMessageDialog(null, "Successfully removed!", "Message",
 									JOptionPane.INFORMATION_MESSAGE);
-							
+
 							// Check if user want to return to main menu
 							int reply2 = JOptionPane.showConfirmDialog(null, "Return to main menu?", "Select an Option",
 									JOptionPane.YES_NO_OPTION);
@@ -580,7 +578,7 @@ public class Lab {
 							if (reply2 == JOptionPane.YES_OPTION) {
 								primaryStage.setScene(HospitalManagement.mainMenuPage(primaryStage));
 							} else {
-								primaryStage.setScene(labPage(primaryStage));
+								primaryStage.setScene(mainPage(primaryStage));
 							}
 						}
 					});
@@ -588,7 +586,7 @@ public class Lab {
 			}
 			vBox.getChildren().add(infoVBox);
 		});
-		
+
 		// Create VBox to limit the position of information
 		VBox leftLimit = new VBox();
 		leftLimit.setPrefWidth(210);
@@ -615,44 +613,40 @@ public class Lab {
 		Scene scene = new Scene(borderPane, 1344, 756);
 		return scene;
 	}
-	
-	
+
 	/* ============================ INPUT VALIDATIOn ============================ */
-	private boolean labValidation(TextField nameTextField, TextField costTextField, String lab, String cost, ArrayList<Lab> arrayList) {
+	private boolean validation(TextField nameTextField, TextField costTextField, String lab, String cost,
+			ArrayList<Lab> arrayList) {
 		// Check for empty input
-		if(lab.isEmpty() || cost.isEmpty()) {
-			errorMsg = "Input cannot be empty";
+		if (lab.isEmpty() || cost.isEmpty()) {
+			setErrorMsg("Input cannot be empty");
 			return false;
 		}
-		
+
 		// Check if cost contains non-number value or negative number
 		try {
 			Integer.parseInt(cost);
 			if (Integer.parseInt(cost) <= 0) {
 				costTextField.clear();
-				errorMsg = "Cost must be a positive number without any spacing.";
+				setErrorMsg("Cost must be a positive number without any spacing.");
 				return false;
 			}
 
 		} catch (NumberFormatException e) {
 			costTextField.clear();
-			this.errorMsg = "Cost must be a positive number without any spacing.";
+			setErrorMsg("Cost must be a positive number without any spacing.");
 			return false;
 		}
-		
+
 		// Check if laboratory name is duplicated
-		for(int i = 0; i < arrayList.size(); ++i) {
-			if(arrayList.get(i).lab.equals(lab)) {
+		for (int i = 0; i < arrayList.size(); ++i) {
+			if (arrayList.get(i).getName().equals(lab)) {
 				nameTextField.clear();
-				errorMsg = "Laboratory already exists in record";
+				setErrorMsg("Laboratory already exists in record");
 				return false;
 			}
 		}
 		return true;
 	}
-	
-	// Getter
-	public String getErrorMsg() {
-		return errorMsg;
-	}
+
 }
