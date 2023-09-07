@@ -87,7 +87,6 @@ public class Medical extends Property implements PageManager {
 		backButton.setStyle(Style.getIconStyle());
 		backButton.setOnMouseEntered(e -> backButton.setStyle(Style.getHoveredIconStyle()));
 		backButton.setOnMouseExited(e -> backButton.setStyle(Style.getIconStyle()));
-		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		backButton.setLayoutX(150);
 		backButton.setLayoutY(70);
 
@@ -218,7 +217,7 @@ public class Medical extends Property implements PageManager {
 			String inputArray[] = { nameInput, manufacturerInput, costInput };
 
 			// Validate user input
-			if (medicalValidation(textFieldArray, inputArray, DatabaseHandler.medicals)) {
+			if (validation(textFieldArray, inputArray, DatabaseHandler.medicals)) {
 
 				// Assign value to data field
 				setName(nameInput);
@@ -499,7 +498,7 @@ public class Medical extends Property implements PageManager {
 		backButton.setOnAction(e -> primaryStage.setScene(mainPage(primaryStage)));
 		HBox BtnHbox = new HBox();
 		BtnHbox.getChildren().add(backButton);
-		HBox.setMargin(backButton, new Insets(70, 0, 0, 75));
+		HBox.setMargin(backButton, new Insets(70, 0, 0, 170));
 
 		// Create label object
 		Label label = new Label("Enter Medical's Name:       ");
@@ -647,7 +646,7 @@ public class Medical extends Property implements PageManager {
 	}
 
 	/* ============================ INPUT VALIDATIOn ============================ */
-	private boolean medicalValidation(TextField[] textField, String[] inputArray, ArrayList<Medical> arrayList) {
+	private boolean validation(TextField[] textField, String[] inputArray, ArrayList<Medical> arrayList) {
 
 		// Check empty input
 		for (int i = 0; i < inputArray.length; i++) {

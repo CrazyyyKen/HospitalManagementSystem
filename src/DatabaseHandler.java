@@ -30,25 +30,29 @@ public class DatabaseHandler {
 			+ "/src/resources/HospitalDatabase.accdb";
 
 	// Status of JDBC connection
-	private static boolean fileExist = false;
 	private static boolean connect = false;
 	private static boolean storeData = false;
 
-	// Getter of database path
-	public static String getDatabasePath() {
-		return databasePath;
-	}
-
-	public static boolean isStoreData() {
+	/* ================ Confirm if user want to store data ================ */
+	public static boolean storePermission() {
+		// Confirm if the user want to store data to database
+		int store = JOptionPane.showConfirmDialog(null,
+				":) Welcome, user ! Thank you for choosing our service.\n\n"
+						+ "Would you like to store your data in Hospital Database? \n\n"
+						+ "*Note that you can continue using our service even without storage.\n\n",
+				"Data Storage Permission", JOptionPane.YES_NO_OPTION);
+		if (store == JOptionPane.YES_OPTION) {
+			storeData = true;
+		}
 		return storeData;
 	}
 
-	public static void setStoreData(boolean storeData) {
-		DatabaseHandler.storeData = storeData;
-	}
-
 	/* ================ Check HospitalManagement File ================ */
-	public static boolean checkFile() {
+	private static boolean checkFile() {
+
+		// FileExist status
+		boolean fileExist = false;
+
 		// HospitalDatabase.accbd File path
 		String filePath = System.getProperty("user.dir").replace("\\", "/") + "/src/resources/HospitalDatabase.accdb";
 
@@ -60,15 +64,14 @@ public class DatabaseHandler {
 			fileExist = true;
 		} else {
 			fileExist = false;
-			JOptionPane.showMessageDialog(null,
-					"HospitalDatabase.accdb file cannot be found!"
-							+ "\n\n Rest assured that you can still use our service without storage.",
-					"Error", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "HospitalDatabase.accdb file cannot be found!", "Warning",
+					JOptionPane.WARNING_MESSAGE);
 
 			// Check if the user want to create new file to store data
 			int createFile = JOptionPane.showConfirmDialog(null,
 					"Would you like to create a HospitalDatabase.accdb file to store data?", "File Creation",
 					JOptionPane.YES_NO_OPTION);
+
 			if (createFile == JOptionPane.YES_OPTION) {
 
 				// Create a file to store data
@@ -103,7 +106,6 @@ public class DatabaseHandler {
 						System.exit(0);
 					}
 				}
-
 			}
 		}
 		return fileExist;
@@ -119,23 +121,12 @@ public class DatabaseHandler {
 			if (connection != null) {
 				// Connected to Hospital Database
 				connect = true;
-				JOptionPane.showMessageDialog(null, "Successfully connected to Hospital Database!", "Success Message",
+				JOptionPane.showMessageDialog(null, "Successfully connected to Hospital Database!", "Connected",
 						JOptionPane.INFORMATION_MESSAGE);
-
-				// Confirm if the user want to store data to database
-				if (!storeData) {
-					int store = JOptionPane.showConfirmDialog(null,
-							"Would you like to store your data in the database? \n\n"
-									+ "*Note that you can continue using our service even without storage.",
-							"Connected to Database", JOptionPane.YES_NO_OPTION);
-					if (store == JOptionPane.YES_OPTION) {
-						storeData = true;
-					}
-				}
 
 			} else {
 				connect = false;
-				// Inform the user when fail to connect to .accdb file
+				// Inform the user when fail to connect to HospitalDatabase.accdb file
 				JOptionPane.showMessageDialog(null,
 						"Fail to connect to Hospital Database! "
 								+ "\nRest assured that you can still use our service without storage.",
@@ -146,7 +137,7 @@ public class DatabaseHandler {
 		return connect;
 	}
 
-	/* ================ Initialise database and Array List ================ */
+	/* ================ Initialize database and Array List ================ */
 	public static void initialiseDatabase() throws SQLException, ClassNotFoundException {
 
 		// Establish connection
@@ -434,7 +425,7 @@ public class DatabaseHandler {
 	public static void addDatabase(String command) {
 		if (connect && storeData) {
 			try {
-				Connection connection = DriverManager.getConnection(DatabaseHandler.getDatabasePath());
+				Connection connection = DriverManager.getConnection(databasePath);
 				connection.createStatement().executeUpdate(command);
 				connection.close();
 			} catch (SQLException e1) {
@@ -447,7 +438,7 @@ public class DatabaseHandler {
 	public static void removeDatabase(String command) {
 		if (connect && storeData) {
 			try {
-				Connection connection = DriverManager.getConnection(DatabaseHandler.getDatabasePath());
+				Connection connection = DriverManager.getConnection(databasePath);
 				connection.createStatement().executeUpdate(command);
 			} catch (SQLException e1) {
 				e1.printStackTrace();

@@ -40,6 +40,7 @@ public class HospitalManagement extends Application {
 			int option = JOptionPane.showConfirmDialog(null,
 					"Thank you for using Hospital Management System!\n\n" + "Are you sure you want to exit?",
 					"Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
 			if (option == JOptionPane.YES_OPTION) {
 				// Exit program
 				System.exit(0);
@@ -53,26 +54,30 @@ public class HospitalManagement extends Application {
 
 	/* ============================ MAIN & DATABASE ============================ */
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		
-		// Check if connected to database and if and user want to store data into database
-		if (DatabaseHandler.getConnection() && DatabaseHandler.isStoreData()) {
-			// Initialize each classes in database and read data into array list
-			DatabaseHandler.initialiseDatabase();
-		}
 
+		if (DatabaseHandler.storePermission()) {
+			// Check if connected to database and if and user want to store data into
+			// database
+			if (DatabaseHandler.getConnection()) {
+				// Initialize each classes in database and read data into array list
+				DatabaseHandler.initialiseDatabase();
+			} else
+				DatabaseHandler.initialiseArray();
+
+		}
 		// If cannot connect to database or the user don't want to store data
 		// if (!DatabaseHandler.isConnect() || !DatabaseHandler.isStoreData())
-		else {
+		else
 			// Initialize array list in program
 			DatabaseHandler.initialiseArray();
-		}
+
 		// Launch screen
 		launch(args);
 
 	}
 
 	/* ============================ WELCOME PAGE ============================ */
-	public static Scene welcomePage(Stage primaryStage) {
+	private static Scene welcomePage(Stage primaryStage) {
 
 		// Create local date time object
 		LocalDateTime date = LocalDateTime.now();

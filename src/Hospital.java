@@ -4,7 +4,12 @@
 public class Hospital {
 	private String name;
 	private String errorMsg;
-
+	
+	// Constructor
+	public Hospital() {
+	}
+	
+	// Getter and setter
 	public String getName() {
 		return name;
 	}
@@ -21,7 +26,5 @@ public class Hospital {
 		this.errorMsg = errorMsg;
 	}
 
-	public Hospital() {
-	}
 
 }
